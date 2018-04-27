@@ -110,6 +110,7 @@
         [appDelegate clearMovieFilesFromTmpDirSparingURL:mediaURL];
         
         self.playerItem = [AVPlayerItem playerItemWithURL:mediaURL];
+        [self.playerItem addOutput:[[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:@{(id)kCVPixelBufferPixelFormatTypeKey:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA]}]];
         
         [self.player replaceCurrentItemWithPlayerItem:self.playerItem];
         
