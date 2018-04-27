@@ -27,6 +27,7 @@ typedef enum PlayerStateTypes { PlayerState_Playing = 0, PlayerState_Stopped } P
 
 -(void) pickAndLoadMovieIntoPlayer;
 -(void) playerDidFinishPlaying:(NSNotification*)notification;
+-(void) updatePreviewOrientation;
 
 
 @end

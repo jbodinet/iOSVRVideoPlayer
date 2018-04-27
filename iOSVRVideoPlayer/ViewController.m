@@ -32,6 +32,7 @@
     if(!self.viewControllerHasMadeFirstAppearance)
     {
         // Player
+        self.player = [[AVPlayer alloc] init];
         self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
         self.playerLayer.frame = self.playerPreview.bounds;
         self.playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
@@ -86,6 +87,8 @@
     
     if ( gesture.state == UIGestureRecognizerStateBegan )
     {
+        AudioServicesPlaySystemSound(1520); // vibrate
+        
         self.playerState = PlayerState_Stopped;
         [self.player pause];
         
@@ -137,6 +140,7 @@
     picker.videoQuality = UIImagePickerControllerQualityTypeHigh;
     [self presentViewController:picker animated:YES completion:nil];
 }
+
 -(void) playerDidFinishPlaying:(NSNotification*)notification {
     [self.player seekToTime:kCMTimeZero toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
         self.playerState = PlayerState_Playing;
@@ -144,5 +148,26 @@
     }];
 }
 
+-(void) updatePreviewOrientation {
+    // update the bounds of the preview layer
+    self.playerLayer.frame = self.playerPreview.bounds;
+}
+
+-(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        NSLog(@"orientation changed animations occur here!!!");
+        
+        [self updatePreviewOrientation];
+        
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        NSLog(@"orientation changed animations completed here!!!");
+    }];
+    
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+}
+
+-(BOOL)prefersStatusBarHidden {
+    return YES;
+}
 
 @end
