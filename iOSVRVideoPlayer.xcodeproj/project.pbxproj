@@ -13,6 +13,7 @@
 		032468732093A559001C845A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 032468722093A559001C845A /* Assets.xcassets */; };
 		032468762093A559001C845A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 032468742093A559001C845A /* LaunchScreen.storyboard */; };
 		032468792093A559001C845A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 032468782093A559001C845A /* main.m */; };
+		032468812093B950001C845A /* FileUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 0324687F2093B950001C845A /* FileUtilities.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,8 @@
 		032468752093A559001C845A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		032468772093A559001C845A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		032468782093A559001C845A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		0324687F2093B950001C845A /* FileUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileUtilities.m; sourceTree = "<group>"; };
+		032468802093B950001C845A /* FileUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileUtilities.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,13 +63,15 @@
 			children = (
 				032468692093A558001C845A /* AppDelegate.h */,
 				0324686A2093A558001C845A /* AppDelegate.m */,
+				032468722093A559001C845A /* Assets.xcassets */,
+				032468802093B950001C845A /* FileUtilities.h */,
+				0324687F2093B950001C845A /* FileUtilities.m */,
+				032468772093A559001C845A /* Info.plist */,
+				032468742093A559001C845A /* LaunchScreen.storyboard */,
+				032468782093A559001C845A /* main.m */,
+				0324686F2093A558001C845A /* Main.storyboard */,
 				0324686C2093A558001C845A /* ViewController.h */,
 				0324686D2093A558001C845A /* ViewController.m */,
-				0324686F2093A558001C845A /* Main.storyboard */,
-				032468722093A559001C845A /* Assets.xcassets */,
-				032468742093A559001C845A /* LaunchScreen.storyboard */,
-				032468772093A559001C845A /* Info.plist */,
-				032468782093A559001C845A /* main.m */,
 			);
 			path = iOSVRVideoPlayer;
 			sourceTree = "<group>";
@@ -143,6 +148,7 @@
 			files = (
 				0324686E2093A558001C845A /* ViewController.m in Sources */,
 				032468792093A559001C845A /* main.m in Sources */,
+				032468812093B950001C845A /* FileUtilities.m in Sources */,
 				0324686B2093A558001C845A /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
