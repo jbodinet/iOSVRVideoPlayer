@@ -109,7 +109,9 @@
         AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
         [appDelegate clearMovieFilesFromTmpDirSparingURL:mediaURL];
         
-        [self.player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithURL:mediaURL]];
+        self.playerItem = [AVPlayerItem playerItemWithURL:mediaURL];
+        
+        [self.player replaceCurrentItemWithPlayerItem:self.playerItem];
         
 //        AVComposition *composition = [FileUtilities compositionFromAsset:mediaURL withNormIn:0.0 andNormOut:1.0];
 //        if(composition)

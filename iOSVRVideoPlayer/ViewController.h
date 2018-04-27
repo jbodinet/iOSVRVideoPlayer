@@ -18,6 +18,8 @@ typedef enum PlayerStateTypes { PlayerState_Playing = 0, PlayerState_Stopped } P
 @property (strong, nonatomic) IBOutlet UIButton *playerPreviewButton;
 @property (strong, nonatomic) AVPlayer *player;
 @property (strong, nonatomic) AVPlayerLayer *playerLayer;
+@property (strong, nonatomic) AVPlayerItem *playerItem;
+@property (strong, nonatomic) AVPlayerItemVideoOutput *playerItemVideoOutput;
 
 @property (nonatomic) PlayerState playerState;
 @property (nonatomic) BOOL viewControllerHasMadeFirstAppearance;
