@@ -34,11 +34,14 @@
         // Player
         self.player = [[AVPlayer alloc] init];
         self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
-        self.playerLayer.frame = self.playerPreview.bounds;
+        self.playerLayer.frame = self.metalView.bounds;
         self.playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
         
-        [self.playerPreview.layer insertSublayer:self.playerLayer atIndex:0];
-        [self.playerPreview layoutIfNeeded];
+//        [self.playerPreview.layer insertSublayer:self.playerLayer atIndex:0];
+//        [self.playerPreview layoutIfNeeded];
+        
+        // Display Link
+        self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkReadBuffer:)];
         
         // register for a notification that that the player has stopped playing because it played until the end
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
@@ -51,6 +54,7 @@
             }
             else
             {
+                // if we are granted access, show picker and allow for the loading of a movie
                 [self pickAndLoadMovieIntoPlayer];
             }
         }];
@@ -134,6 +138,9 @@
 
 #pragma mark - Player Utils
 -(void) pickAndLoadMovieIntoPlayer {
+    if([PHPhotoLibrary authorizationStatus] != PHAuthorizationStatusAuthorized)
+        return;
+    
     // pop open the photo library and show videos
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
     picker.delegate = self;
@@ -153,7 +160,21 @@
 
 -(void) updatePreviewOrientation {
     // update the bounds of the preview layer
-    self.playerLayer.frame = self.playerPreview.bounds;
+    self.playerLayer.frame = self.metalView.bounds;
+}
+
+#pragma mark - CADisplayLink
+
+- (void) displayLinkReadBuffer:(CADisplayLink *)sender {
+    CFTimeInterval nextVSync = sender.timestamp + sender.duration;
+    CMTime currentTime = [self.playerItemVideoOutput itemTimeForHostTime:nextVSync];
+    
+    if([self.playerItemVideoOutput hasNewPixelBufferForItemTime:currentTime])
+    {
+        CVPixelBufferRef pixelBufferRef = [self.playerItemVideoOutput copyPixelBufferForItemTime:currentTime itemTimeForDisplay:nil];
+        self.metalView.pixelBuffer = pixelBufferRef;
+        self.metalView.inputTime = currentTime.value/(double)currentTime.timescale;
+    }
 }
 
 -(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
