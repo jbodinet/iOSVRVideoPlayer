@@ -24,10 +24,6 @@
         // create the metal command queue
         self.commandQueue = [self.device newCommandQueue];
         
-        // create the metal params buffer
-        // Create a buffer that contains a user-defined C++ object
-        self.paramsBuffer = [self.device newBufferWithBytes:&(metalParam) length:sizeof(metalParam) options:MTLResourceOptionCPUCacheModeDefault];
-        
         // create the metal library
         self.library = [self.device newDefaultLibrary];
         
@@ -122,10 +118,14 @@
     // set the compute pipeline
     [commandEncoder setComputePipelineState:self.filterState];
     
+    // create the params buffer
+    MetalParam metalParam = self.metalParam;
+    id<MTLBuffer> paramsBuffer = [self.device newBufferWithBytes:&(metalParam) length:sizeof(metalParam) options:MTLResourceOptionCPUCacheModeDefault];
+    
     // set the input texture, the output texture, and the params buffer
     [commandEncoder setTexture:srcTexture atIndex:0]; // SRC TEXTURE
     [commandEncoder setTexture:drawable.texture atIndex:1];
-    [commandEncoder setBuffer:self.paramsBuffer offset:0 atIndex:0];
+    [commandEncoder setBuffer:paramsBuffer offset:0 atIndex:0];
     
     // Convert the time in a metal buffer.
     float time = (float)self.inputTime;

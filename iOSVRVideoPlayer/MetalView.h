@@ -13,12 +13,8 @@
 #import "MetalParamWindowFromEquirectOptimized.h"
 
 @interface MetalView : MTKView
-{
-    MetalParam metalParam;
-};
 
 @property (strong, nonatomic) id<MTLCommandQueue> commandQueue;
-@property (strong, nonatomic) id<MTLBuffer> paramsBuffer;
 @property (strong, nonatomic) id<MTLLibrary> library;
 @property (strong, nonatomic) id<MTLFunction> function;
 @property (strong, nonatomic) id<MTLComputePipelineState> filterState;
@@ -27,6 +23,7 @@
 @property (nonatomic) CVMetalTextureCacheRef textureCache;
 @property (nonatomic) CVPixelBufferRef pixelBuffer; 
 @property (nonatomic) CFTimeInterval inputTime;
+@property (nonatomic) MetalParam metalParam;
 
 
 -(void)render:(MTKView*)view;
