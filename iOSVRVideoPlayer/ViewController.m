@@ -42,6 +42,8 @@
         
         // Display Link
         self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkReadBuffer:)];
+        [self.displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        [self.displayLink setPaused:NO]; // *** SHOULD PAUSE THIS WHEN VIEW IS HIDDEN???
         
         // register for a notification that that the player has stopped playing because it played until the end
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
@@ -114,7 +116,8 @@
         [appDelegate clearMovieFilesFromTmpDirSparingURL:mediaURL];
         
         self.playerItem = [AVPlayerItem playerItemWithURL:mediaURL];
-        [self.playerItem addOutput:[[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:@{(id)kCVPixelBufferPixelFormatTypeKey:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA]}]];
+        self.playerItemVideoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:@{(id)kCVPixelBufferPixelFormatTypeKey:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA]}];
+        [self.playerItem addOutput:self.playerItemVideoOutput];
         
         [self.player replaceCurrentItemWithPlayerItem:self.playerItem];
         

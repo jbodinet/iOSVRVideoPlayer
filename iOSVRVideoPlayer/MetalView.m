@@ -59,6 +59,13 @@
         
         // Set the size of the drawable.
         self.drawableSize = CGSizeMake(1920, 1080); // *** IS THIS CORRECT FOR WHAT WE WANT?
+        
+        // register for motion
+        self.motionManager = [[CMMotionManager alloc] init];
+        self.motionManager.deviceMotionUpdateInterval = 0.1f;
+        [self.motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
+            [self processMotion:motion];
+        }];
     }
     
     return self;
@@ -118,6 +125,96 @@
     // set the compute pipeline
     [commandEncoder setComputePipelineState:self.filterState];
     
+    // fill in what of the metal params that we can
+    _metalParam.equirectWidth = (unsigned)width;
+    _metalParam.equirectHeight = (unsigned)height;
+    
+    // TEST ONLY
+    // ******************************
+    // ******************************
+    // ******************************
+    // Build up the rest of the necessary information
+    // ------------------------------------------------------------
+#if 0
+    float headingOffset = -PI;
+    float pitchOffset = 0;
+    float bankOffset = 0;
+    
+    float heading = 45 * DegToRad;
+    float pitch = 45 * DegToRad;
+    float bank = 0 * DegToRad;
+    
+    float HFOV = 90.0 * DegToRad;
+    
+    equirectWidth = decodedWidth;
+    equirectHeight = decodedHeight;
+    
+    halfEquirectWidth = equirectWidth * 0.5;
+    halfEquirectHeight = equirectHeight * 0.5;
+    
+    halfDstWidth = dstWidth * 0.5;
+    halfDstHeight = dstHeight * 0.5;
+    
+    // the HFOV and VFOV of the viewing volume used to generate
+    // the dst image when including perspective in the process
+    halfHFOV = (HFOV) / 2.0;
+    halfVFOV = halfHFOV * (dstHeight / (float)dstWidth);
+    
+    // the density ratios between equirect and dst imagees and vice-versa
+    equirectToDstPixDensity = (halfDstWidth) / ((halfHFOV / PI) * halfEquirectWidth);
+    dstToEquirectPixDensity = 1.0 / equirectToDstPixDensity;
+    
+    // the Space here is mathematical cartesian space with the XY plane on a sheet of paper laying on the table
+    // and the Z axis pointing straight up out of the table. Generally computer graphic cartesian space has Z going into and
+    // out of the image plane, but with mathematical cartesian space, it is Y that goes into and out of the image plane
+    // ---------------------------------------------------------------------------------------------------------------------
+    
+    // ----------------------------------------------------------
+    // ----------------------------------------------------------
+    // set up the rotation matrix using quaternions. This
+    // occurs by successively storing up rotations in the
+    // 'totalQuaternion', though to do so we have to prepare
+    // the axis of each rotation as we go.
+    // ----------------------------------------------------------
+    // ----------------------------------------------------------
+    
+    // heading rotation is about the Z axis
+    // --------------------------------------------------------------------
+    rotationAxis[CiX] = 0.0;
+    rotationAxis[CiY] = 0.0;
+    rotationAxis[CiZ] = 1.0;
+    rotationAxis[CiW] = 1.0;
+    
+    quaternionInitialize(headingQuaternion, rotationAxis, heading - headingOffset);
+    
+    // pitch rotation is about the Y axis
+    // --------------------------------------------------------------------
+    rotationAxis[CiX] = 0.0;
+    rotationAxis[CiY] = 1.0;
+    rotationAxis[CiZ] = 0.0;
+    rotationAxis[CiW] = 1.0;
+    
+    quaternionInitialize(pitchQuaternion, rotationAxis, pitch - pitchOffset);
+    
+    // bank rotation is about the X axis
+    // --------------------------------------------------------------------
+    rotationAxis[CiX] = 1.0;
+    rotationAxis[CiY] = 0.0;
+    rotationAxis[CiZ] = 0.0;
+    rotationAxis[CiW] = 1.0;
+    
+    quaternionInitialize(bankQuaternion, rotationAxis, bank - bankOffset);
+    
+    // build up the total rotation and store it in the rotationMatrix in the metal param
+    quaternionMultiply(headingQuaternion, pitchQuaternion);
+    quaternionMultiply(pitchQuaternion, bankQuaternion);
+    quaternionToMatrix(bankQuaternion, _metalParam.rotationMatrix);
+#endif
+    // TEST ONLY OVER
+    // ******************************
+    // ******************************
+    // ******************************
+    
     // create the params buffer
     MetalParam metalParam = self.metalParam;
     id<MTLBuffer> paramsBuffer = [self.device newBufferWithBytes:&(metalParam) length:sizeof(metalParam) options:MTLResourceOptionCPUCacheModeDefault];
@@ -126,10 +223,6 @@
     [commandEncoder setTexture:srcTexture atIndex:0]; // SRC TEXTURE
     [commandEncoder setTexture:drawable.texture atIndex:1];
     [commandEncoder setBuffer:paramsBuffer offset:0 atIndex:0];
-    
-    // Convert the time in a metal buffer.
-    float time = (float)self.inputTime;
-    [commandEncoder setBytes:&time length:sizeof(float) atIndex:0];
     
     // encode a threadgroup's execution of a compute function
     [commandEncoder dispatchThreadgroups:[self threadGroups] threadsPerThreadgroup:[self threadGroupCount]];
@@ -142,6 +235,10 @@
     
     // Commit the command buffer for execution.
     [commandBuffer commit];
+}
+
+-(void)processMotion:(CMDeviceMotion*)motion {
+    NSLog(@"Roll: %.2f Pitch: %.2f Yaw: %.2f", motion.attitude.roll, motion.attitude.pitch, motion.attitude.yaw);
 }
 
 -(MTLSize)threadGroupCount {
