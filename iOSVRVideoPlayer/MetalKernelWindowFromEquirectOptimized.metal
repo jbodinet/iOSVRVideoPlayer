@@ -37,6 +37,13 @@ kernel void kernelFunctionEquirectangularToRectilinear(texture2d<float, access::
     
     float vecSrc [3], vecDst [3];
     
+//    if(true)
+//    {
+//        float4 colorAtPixel = float4(gid.x / (float)equirectWidth, 0.0, 0.0, 1.0);
+//        outTexture.write(colorAtPixel, gid);
+//        return;
+//    }
+    
     vecSrc[CiX] = (halfDstWidth * params->dstToEquirectPixDensity) / params->halfHFOV_tangent;
     vecSrc[CiY] = ((params->halfHFOV / PI2) * equirectWidth) - (gid.x * params->dstToEquirectPixDensity);
     vecSrc[CiZ] = ((params->halfVFOV / PI) * equirectHeight) - (gid.y * params->dstToEquirectPixDensity);
