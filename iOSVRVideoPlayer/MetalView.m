@@ -58,7 +58,7 @@
         self.contentScaleFactor = [UIScreen mainScreen].scale;
         
         // Set the size of the drawable.
-        self.drawableSize = CGSizeMake(1920, 1080); // *** IS THIS CORRECT FOR WHAT WE WANT?
+        self.drawableSize = CGSizeMake(self.bounds.size.width, self.bounds.size.height);
         
         // register for motion
         self.motionManager = [[CMMotionManager alloc] init];
@@ -225,7 +225,7 @@
     [commandEncoder setBuffer:paramsBuffer offset:0 atIndex:0];
     
     // encode a threadgroup's execution of a compute function
-    [commandEncoder dispatchThreadgroups:[self threadGroups] threadsPerThreadgroup:[self threadGroupCount]];
+    [commandEncoder dispatchThreadgroups:[self threadGroups] threadsPerThreadgroup:[self threadsPerGroup]];
     
     // end the encoding of the command.
     [commandEncoder endEncoding];
@@ -241,12 +241,12 @@
     NSLog(@"Roll: %.2f Pitch: %.2f Yaw: %.2f", motion.attitude.roll, motion.attitude.pitch, motion.attitude.yaw);
 }
 
--(MTLSize)threadGroupCount {
+-(MTLSize)threadsPerGroup {
     return MTLSizeMake(8, 8, 1);
 }
 
 -(MTLSize)threadGroups {
-    MTLSize groupCount = [self threadGroupCount];
+    MTLSize groupCount = [self threadsPerGroup];
     return MTLSizeMake((((NSUInteger)self.bounds.size.width) / groupCount.width), (((NSUInteger)self.bounds.size.height) / groupCount.height), 1);
 }
 

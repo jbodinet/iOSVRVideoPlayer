@@ -33,9 +33,9 @@
     {
         // Player
         self.player = [[AVPlayer alloc] init];
-        self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
-        self.playerLayer.frame = self.metalView.bounds;
-        self.playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
+//        self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
+//        self.playerLayer.frame = self.metalView.bounds;
+//        self.playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
         
 //        [self.playerPreview.layer insertSublayer:self.playerLayer atIndex:0];
 //        [self.playerPreview layoutIfNeeded];
@@ -162,8 +162,8 @@
 }
 
 -(void) updatePreviewOrientation {
-    // update the bounds of the preview layer
-    self.playerLayer.frame = self.metalView.bounds;
+    // update the bounds of the metal drawable
+    self.metalView.drawableSize = CGSizeMake(self.metalView.bounds.size.width, self.metalView.bounds.size.height);
 }
 
 #pragma mark - CADisplayLink

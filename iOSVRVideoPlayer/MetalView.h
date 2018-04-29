@@ -31,7 +31,7 @@
 
 -(void)processMotion:(CMDeviceMotion*)motion;
 
--(MTLSize)threadGroupCount;
+-(MTLSize)threadsPerGroup;
 -(MTLSize)threadGroups;
 
 @end
