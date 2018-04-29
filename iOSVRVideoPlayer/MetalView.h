@@ -24,7 +24,10 @@
 @property (nonatomic) CVMetalTextureCacheRef textureCache;
 @property (nonatomic) CVPixelBufferRef pixelBuffer; 
 @property (nonatomic) CFTimeInterval inputTime;
-@property (nonatomic) MetalParam metalParam;
+
+@property (nonatomic) float heading; // rads
+@property (nonatomic) float pitch; // rads
+@property (nonatomic) float bank; // rads
 
 
 -(void)render:(MTKView*)view;

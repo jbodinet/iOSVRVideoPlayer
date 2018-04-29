@@ -15,6 +15,14 @@
     self = [super initWithCoder:coder];
     if(self)
     {
+        // init basic properties
+        // ******************************
+        self.heading = 45 * DegToRad;
+        self.pitch = 45 * DegToRad;
+        self.bank = 0 * DegToRad;
+        
+        // init metal related props
+        // ******************************
         NSError *errors;
         
         // create default metal device
@@ -62,8 +70,9 @@
         self.drawableSize = CGSizeMake(self.bounds.size.width, self.bounds.size.height);
         
         // register for motion
+        // ***************************************************
         self.motionManager = [[CMMotionManager alloc] init];
-        self.motionManager.deviceMotionUpdateInterval = 0.1f;
+        self.motionManager.deviceMotionUpdateInterval = 0.01f;
         [self.motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
             [self processMotion:motion];
         }];
@@ -126,23 +135,23 @@
     // set the compute pipeline
     [commandEncoder setComputePipelineState:self.filterState];
     
-    // fill in what of the metal params that we can
-    _metalParam.equirectWidth = (unsigned)srcTextureWidth;
-    _metalParam.equirectHeight = (unsigned)srcTextureHeight;
-    
     // TEST ONLY
     // ******************************
     // ******************************
     // ******************************
+    
+    // The metalParam
+    MetalParam metalParam;
+    
+    // fill in what of the metal params that we can
+    metalParam.equirectWidth = (unsigned)srcTextureWidth;
+    metalParam.equirectHeight = (unsigned)srcTextureHeight;
+    
     // Build up the rest of the necessary information
     // ------------------------------------------------------------
-    float headingOffset = -PI;
-    float pitchOffset = 0;
+    float headingOffset = 0; // -PI;
+    float pitchOffset = PI2;
     float bankOffset = 0;
-    
-    float heading = 45 * DegToRad;
-    float pitch = 45 * DegToRad;
-    float bank = 0 * DegToRad;
     
     float HFOV = 45.0 * DegToRad;
     
@@ -189,7 +198,7 @@
     rotationAxis[CiZ] = 1.0;
     rotationAxis[CiW] = 1.0;
     
-    quaternionInitialize(headingQuaternion, rotationAxis, heading - headingOffset);
+    quaternionInitialize(headingQuaternion, rotationAxis, self.heading - headingOffset);
     
     // pitch rotation is about the Y axis
     // --------------------------------------------------------------------
@@ -198,7 +207,7 @@
     rotationAxis[CiZ] = 0.0;
     rotationAxis[CiW] = 1.0;
     
-    quaternionInitialize(pitchQuaternion, rotationAxis, pitch - pitchOffset);
+    quaternionInitialize(pitchQuaternion, rotationAxis, self.pitch - pitchOffset);
     
     // bank rotation is about the X axis
     // --------------------------------------------------------------------
@@ -207,21 +216,21 @@
     rotationAxis[CiZ] = 0.0;
     rotationAxis[CiW] = 1.0;
     
-    quaternionInitialize(bankQuaternion, rotationAxis, bank - bankOffset);
+    quaternionInitialize(bankQuaternion, rotationAxis, self.bank - bankOffset);
     
     // build up the total rotation and store it in the rotationMatrix in the metal param
     quaternionMultiply(headingQuaternion, pitchQuaternion);
     quaternionMultiply(pitchQuaternion, bankQuaternion);
-    quaternionToMatrix(bankQuaternion, _metalParam.rotationMatrix);
+    quaternionToMatrix(bankQuaternion, metalParam.rotationMatrix);
     
     // load up the rest of the metal params
-    _metalParam.dstToEquirectPixDensity = dstToEquirectPixDensity;
-    _metalParam.halfHFOV = halfHFOV;
-    _metalParam.halfVFOV = halfVFOV;
-    _metalParam.halfHFOV_tangent = tan(halfHFOV);
-    _metalParam.equirectWidth = equirectWidth;
-    _metalParam.equirectHeight = equirectHeight;
-    _metalParam.radius = 1.0;
+    metalParam.dstToEquirectPixDensity = dstToEquirectPixDensity;
+    metalParam.halfHFOV = halfHFOV;
+    metalParam.halfVFOV = halfVFOV;
+    metalParam.halfHFOV_tangent = tan(halfHFOV);
+    metalParam.equirectWidth = equirectWidth;
+    metalParam.equirectHeight = equirectHeight;
+    metalParam.radius = 1.0;
 
     // TEST ONLY OVER
     // ******************************
@@ -229,7 +238,6 @@
     // ******************************
     
     // create the params buffer
-    MetalParam metalParam = self.metalParam;
     id<MTLBuffer> paramsBuffer = [self.device newBufferWithBytes:&(metalParam) length:sizeof(metalParam) options:MTLResourceOptionCPUCacheModeDefault];
     
     // set the input texture, the output texture, and the params buffer
@@ -252,6 +260,9 @@
 
 -(void)processMotion:(CMDeviceMotion*)motion {
     NSLog(@"Roll: %.2f Pitch: %.2f Yaw: %.2f", motion.attitude.roll, motion.attitude.pitch, motion.attitude.yaw);
+    self.heading = motion.attitude.yaw;
+    self.pitch = -motion.attitude.pitch;
+    self.bank = motion.attitude.roll;
 }
 
 -(MTLSize)threadsPerGroup {
