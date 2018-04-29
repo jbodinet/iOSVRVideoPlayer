@@ -7,6 +7,7 @@
 //
 
 #import "MetalView.h"
+#import "SphericalMath.h"
 
 @implementation MetalView
 
@@ -93,13 +94,13 @@
     }
     
     // pull the dimensions from pixelBuffer
-    size_t width = CVPixelBufferGetWidth(pixelBuffer);
-    size_t height = CVPixelBufferGetHeight(pixelBuffer);
+    size_t srcTextureWidth = CVPixelBufferGetWidth(pixelBuffer);
+    size_t srcTextureHeight = CVPixelBufferGetHeight(pixelBuffer);
     
     // Converts the pixelBuffer in a Metal texture.
     CVMetalTextureRef srcTextureRef;
     id<MTLTexture> srcTexture;
-    if(kCVReturnSuccess != CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, self.textureCache, pixelBuffer, nil, MTLPixelFormatBGRA8Unorm, width, height, 0, &srcTextureRef))
+    if(kCVReturnSuccess != CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, self.textureCache, pixelBuffer, nil, MTLPixelFormatBGRA8Unorm, srcTextureWidth, srcTextureHeight, 0, &srcTextureRef))
     {
         NSLog(@"render: called CVMetalTextureCacheCreateTextureFromImage() failed!!!");
         return;
@@ -126,8 +127,8 @@
     [commandEncoder setComputePipelineState:self.filterState];
     
     // fill in what of the metal params that we can
-    _metalParam.equirectWidth = (unsigned)width;
-    _metalParam.equirectHeight = (unsigned)height;
+    _metalParam.equirectWidth = (unsigned)srcTextureWidth;
+    _metalParam.equirectHeight = (unsigned)srcTextureHeight;
     
     // TEST ONLY
     // ******************************
@@ -135,7 +136,6 @@
     // ******************************
     // Build up the rest of the necessary information
     // ------------------------------------------------------------
-#if 0
     float headingOffset = -PI;
     float pitchOffset = 0;
     float bankOffset = 0;
@@ -144,25 +144,29 @@
     float pitch = 45 * DegToRad;
     float bank = 0 * DegToRad;
     
-    float HFOV = 90.0 * DegToRad;
+    float HFOV = 45.0 * DegToRad;
     
-    equirectWidth = decodedWidth;
-    equirectHeight = decodedHeight;
+    float equirectWidth = srcTextureWidth;
+    float equirectHeight = srcTextureHeight;
     
-    halfEquirectWidth = equirectWidth * 0.5;
-    halfEquirectHeight = equirectHeight * 0.5;
+    float halfEquirectWidth = equirectWidth * 0.5;
     
-    halfDstWidth = dstWidth * 0.5;
-    halfDstHeight = dstHeight * 0.5;
+    float dstWidth = self.drawableSize.width;
+    float dstHeight = self.drawableSize.height;
+    
+    float halfDstWidth = dstWidth * 0.5;
     
     // the HFOV and VFOV of the viewing volume used to generate
     // the dst image when including perspective in the process
-    halfHFOV = (HFOV) / 2.0;
-    halfVFOV = halfHFOV * (dstHeight / (float)dstWidth);
+    float halfHFOV = (HFOV) / 2.0;
+    float halfVFOV = halfHFOV * (dstHeight / (float)dstWidth);
     
     // the density ratios between equirect and dst imagees and vice-versa
-    equirectToDstPixDensity = (halfDstWidth) / ((halfHFOV / PI) * halfEquirectWidth);
-    dstToEquirectPixDensity = 1.0 / equirectToDstPixDensity;
+    float equirectToDstPixDensity = (halfDstWidth) / ((halfHFOV / PI) * halfEquirectWidth);
+    float dstToEquirectPixDensity = 1.0 / equirectToDstPixDensity;
+    
+    float rotationAxis[4];
+    float headingQuaternion [4], pitchQuaternion [4], bankQuaternion [4];
     
     // the Space here is mathematical cartesian space with the XY plane on a sheet of paper laying on the table
     // and the Z axis pointing straight up out of the table. Generally computer graphic cartesian space has Z going into and
@@ -209,7 +213,16 @@
     quaternionMultiply(headingQuaternion, pitchQuaternion);
     quaternionMultiply(pitchQuaternion, bankQuaternion);
     quaternionToMatrix(bankQuaternion, _metalParam.rotationMatrix);
-#endif
+    
+    // load up the rest of the metal params
+    _metalParam.dstToEquirectPixDensity = dstToEquirectPixDensity;
+    _metalParam.halfHFOV = halfHFOV;
+    _metalParam.halfVFOV = halfVFOV;
+    _metalParam.halfHFOV_tangent = tan(halfHFOV);
+    _metalParam.equirectWidth = equirectWidth;
+    _metalParam.equirectHeight = equirectHeight;
+    _metalParam.radius = 1.0;
+
     // TEST ONLY OVER
     // ******************************
     // ******************************

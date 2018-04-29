@@ -9,6 +9,13 @@
 #include <math.h>
 #include "SphericalMath.h"
 
+const float PI = PI_RAW;
+const float PI2 = PI_RAW * 2.0f;
+const float PIOver2 = PI_RAW * 0.5;
+
+const float RadToDeg = (float) ( 180.0 / PI_RAW );
+const float DegToRad = (float) ( PI_RAW / 180.0 );
+
 void quaternionInitialize(float local [4], float axis [4], float angleRad)
 {
     /*

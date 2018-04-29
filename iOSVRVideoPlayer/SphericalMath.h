@@ -13,12 +13,12 @@
 
 #define PI_RAW (3.1415926535897932384626433832795028841971)
 
-const float PI = PI_RAW;
-const float PI2 = PI_RAW * 2.0f;
-const float PIOver2 = PI_RAW * 0.5;
+extern const float PI;
+extern const float PI2;
+extern const float PIOver2;
 
-const float RadToDeg = (float) ( 180.0 / PI_RAW );
-const float DegToRad = (float) ( PI_RAW / 180.0 );
+extern const float RadToDeg;
+extern const float DegToRad;
 
 void quaternionInitialize(float local [4], float axis [4], float angleRad);
 void quaternionMultiply(float local [4], float total [4]);
