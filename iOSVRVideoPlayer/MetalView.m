@@ -218,8 +218,8 @@
             // set up the only necessary offset, which is pitch rotation is about the Y axis
             // --------------------------------------------------------------------
             rotationAxis[CiX] = 0.0;
-            rotationAxis[CiY] = 0.0;
-            rotationAxis[CiZ] = 1.0;
+            rotationAxis[CiY] = 1.0;
+            rotationAxis[CiZ] = 0.0;
             rotationAxis[CiW] = 1.0;
             
             quaternionInitialize(offsetQuaternion, rotationAxis, offset);
@@ -228,9 +228,9 @@
             // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
             // --------------------------------------------------------------------
             finalQuaternion[QiW] = self.quaternion.w;
-            finalQuaternion[QiZ] = self.quaternion.z;
-            finalQuaternion[QiY] = -self.quaternion.x;
-            finalQuaternion[QiX] = -self.quaternion.y;
+            finalQuaternion[QiX] = -self.quaternion.z;
+            finalQuaternion[QiY] = self.quaternion.y;
+            finalQuaternion[QiZ] = self.quaternion.x;
             
             // Apply the offset to the quaternion we received from CoreMotion
             // and then turn the whole think into a rotation matrix
