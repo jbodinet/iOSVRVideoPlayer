@@ -168,28 +168,27 @@
     
     float halfDstWidth = dstWidth * 0.5;
     
+    // set up the only necessary offset, which is pitch rotation is about the Y axis
+    // --------------------------------------------------------------------
+    const float offset = PIOver2;
+    float offsetQuaternion [4];
+    rotationAxis[CiX] = 0.0;
+    rotationAxis[CiY] = 1.0;
+    rotationAxis[CiZ] = 0.0;
+    rotationAxis[CiW] = 1.0;
+    
+    quaternionInitialize(offsetQuaternion, rotationAxis, offset);
+    
     switch(self.orientation)
     {
         case UIInterfaceOrientationPortrait:
         case UIInterfaceOrientationPortraitUpsideDown:
         {
-            const float pitchOffset = PIOver2;
-            float offsetQuaternion [4];
-            
             // must derive HFOV from landscapeFOV and widths and heights.
             // NOTE:
             //  - dstWidth here is the width of the portrait-oriented dst img
             //  - dstHeight here is the width of the landscape-oriented dst img
             HFOV = 2.0 * atan2((0.5 * dstWidth), ((0.5 * dstHeight) / tan(0.5 * self.landscapeOrientationHFOVRadians)));
-            
-            // set up the only necessary offset, which is pitch rotation is about the Y axis
-            // --------------------------------------------------------------------
-            rotationAxis[CiX] = 0.0;
-            rotationAxis[CiY] = 1.0;
-            rotationAxis[CiZ] = 0.0;
-            rotationAxis[CiW] = 1.0;
-            
-            quaternionInitialize(offsetQuaternion, rotationAxis, pitchOffset);
             
             // pull the quaternion from CoreMotion
             // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
@@ -199,29 +198,12 @@
             finalQuaternion[QiY] = -self.quaternion.x;
             finalQuaternion[QiZ] = self.quaternion.y;
             
-            // Apply the offset to the quaternion we received from CoreMotion
-            // and then turn the whole think into a rotation matrix
-            // --------------------------------------------------------------------
-            quaternionMultiply(offsetQuaternion, finalQuaternion);
-            
             break;
         }
         case UIInterfaceOrientationLandscapeRight:
         {
-            const float offset = PIOver2;
-            float offsetQuaternion [4];
-            
             // can use this as-is
             HFOV = self.landscapeOrientationHFOVRadians;
-            
-            // set up the only necessary offset, which is pitch rotation is about the Y axis
-            // --------------------------------------------------------------------
-            rotationAxis[CiX] = 0.0;
-            rotationAxis[CiY] = 1.0;
-            rotationAxis[CiZ] = 0.0;
-            rotationAxis[CiW] = 1.0;
-            
-            quaternionInitialize(offsetQuaternion, rotationAxis, offset);
             
             // pull the quaternion from CoreMotion
             // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
@@ -231,29 +213,12 @@
             finalQuaternion[QiY] = self.quaternion.y;
             finalQuaternion[QiZ] = self.quaternion.x;
             
-            // Apply the offset to the quaternion we received from CoreMotion
-            // and then turn the whole think into a rotation matrix
-            // --------------------------------------------------------------------
-            quaternionMultiply(offsetQuaternion, finalQuaternion);
-            
             break;
         }
         case UIInterfaceOrientationLandscapeLeft:
         {
-            const float offset = PIOver2;
-            float offsetQuaternion [4];
-            
             // can use this as-is
             HFOV = self.landscapeOrientationHFOVRadians;
-            
-            // set up the only necessary offset, which is pitch rotation is about the Y axis
-            // --------------------------------------------------------------------
-            rotationAxis[CiX] = 0.0;
-            rotationAxis[CiY] = 1.0;
-            rotationAxis[CiZ] = 0.0;
-            rotationAxis[CiW] = 1.0;
-            
-            quaternionInitialize(offsetQuaternion, rotationAxis, offset);
             
             // pull the quaternion from CoreMotion
             // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
@@ -263,18 +228,18 @@
             finalQuaternion[QiY] = -self.quaternion.y;
             finalQuaternion[QiZ] = -self.quaternion.x;
             
-            // Apply the offset to the quaternion we received from CoreMotion
-            // and then turn the whole think into a rotation matrix
-            // --------------------------------------------------------------------
-            quaternionMultiply(offsetQuaternion, finalQuaternion);
-            
             break;
         }
         default:
+        {
             break;
+        }
     }
     
-    // transform the finalQuaternion to a rotation matrix
+    // Apply the offset to the quaternion we received from CoreMotion
+    // and then turn the whole think into a rotation matrix
+    // --------------------------------------------------------------------
+    quaternionMultiply(offsetQuaternion, finalQuaternion);
     quaternionToMatrix(finalQuaternion, metalParam.rotationMatrix);
     
     // the HFOV and VFOV of the viewing volume used to generate
