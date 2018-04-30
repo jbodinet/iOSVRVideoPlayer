@@ -207,29 +207,29 @@
     rotationAxis[CiY] = 0.0;
     rotationAxis[CiZ] = 1.0;
     rotationAxis[CiW] = 1.0;
-    
+
     quaternionInitialize(headingQuaternion, rotationAxis, self.heading - headingOffset);
-    
+
     // pitch rotation is about the Y axis
     // --------------------------------------------------------------------
     rotationAxis[CiX] = 0.0;
     rotationAxis[CiY] = 1.0;
     rotationAxis[CiZ] = 0.0;
     rotationAxis[CiW] = 1.0;
-    
+
     quaternionInitialize(pitchQuaternion, rotationAxis, self.pitch - pitchOffset);
-    
+
     // bank rotation is about the X axis
     // --------------------------------------------------------------------
     rotationAxis[CiX] = 1.0;
     rotationAxis[CiY] = 0.0;
     rotationAxis[CiZ] = 0.0;
     rotationAxis[CiW] = 1.0;
-    
+
     quaternionInitialize(bankQuaternion, rotationAxis, self.bank - bankOffset);
-    
-    NSLog(@"Heading: %.2f Pitch: %.2f Bank: %.2f", self.heading - headingOffset, self.pitch - pitchOffset, self.bank - bankOffset);
-    
+
+  //  NSLog(@"Heading: %.2f Pitch: %.2f Bank: %.2f", self.heading - headingOffset, self.pitch - pitchOffset, self.bank - bankOffset);
+
     // build up the total rotation and store it in the rotationMatrix in the metal param
     quaternionMultiply(headingQuaternion, pitchQuaternion);
     quaternionMultiply(pitchQuaternion, bankQuaternion);
@@ -280,12 +280,12 @@
 }
 
 -(void)processMotion:(CMDeviceMotion*)motion {
-//    NSLog(@"Roll: %.2f Pitch: %.2f Yaw: %.2f", motion.attitude.roll, motion.attitude.pitch, motion.attitude.yaw);
-//    NSLog(@"GX: %.2f GY: %.2f GZ: %.2f", motion.gravity.x, motion.gravity.y, motion.gravity.z);
+    //NSLog(@"Roll: %.2f Pitch: %.2f Yaw: %.2f", motion.attitude.roll, motion.attitude.pitch, motion.attitude.yaw);
+    //NSLog(@"GX: %.2f GY: %.2f GZ: %.2f", motion.gravity.x, motion.gravity.y, motion.gravity.z);
+    //NSLog(@"QW: %0.2f QX: %0.2f QY: %0.2f QZ: %0.2f", motion.attitude.quaternion.w, motion.attitude.quaternion.x, motion.attitude.quaternion.y, motion.attitude.quaternion.z);
     self.heading = motion.attitude.yaw;
 //    self.pitch = -motion.attitude.pitch; // #error try subtracting here instead...
     self.bank = motion.attitude.roll;
-    
     
     if(motion.gravity.z >= 0)
     {
