@@ -147,14 +147,12 @@
     // ------------------------------------------------------------
     
     float rotationAxis[4];
-    float offsetQuaternion [4], finalQuaternion [4];
+    float finalQuaternion [4];
     
     // the Space here is mathematical cartesian space with the XY plane on a sheet of paper laying on the table
     // and the Z axis pointing straight up out of the table. Generally computer graphic cartesian space has Z going into and
     // out of the image plane, but with mathematical cartesian space, it is Y that goes into and out of the image plane
     // ---------------------------------------------------------------------------------------------------------------------
-    
-    
     
     // Handle things differently based upon orientation
     // --------------------------------------------------------------------
@@ -176,6 +174,7 @@
         case UIInterfaceOrientationPortraitUpsideDown:
         {
             const float pitchOffset = PIOver2;
+            float offsetQuaternion [4];
             
             // must derive HFOV from landscapeFOV and widths and heights.
             // NOTE:
@@ -200,24 +199,30 @@
             finalQuaternion[QiY] = -self.quaternion.x;
             finalQuaternion[QiZ] = self.quaternion.y;
             
+            // Apply the offset to the quaternion we received from CoreMotion
+            // and then turn the whole think into a rotation matrix
+            // --------------------------------------------------------------------
+            quaternionMultiply(offsetQuaternion, finalQuaternion);
+            
             break;
         }
         case UIInterfaceOrientationLandscapeLeft:
         case UIInterfaceOrientationLandscapeRight:
         {
-            const float bankOffset = -PIOver2;
+            const float offset = PIOver2;
+            float offsetQuaternion [4];
             
             // can use this as-is
             HFOV = self.landscapeOrientationHFOVRadians;
             
             // set up the only necessary offset, which is pitch rotation is about the Y axis
             // --------------------------------------------------------------------
-            rotationAxis[CiX] = 1.0;
+            rotationAxis[CiX] = 0.0;
             rotationAxis[CiY] = 0.0;
-            rotationAxis[CiZ] = 0.0;
+            rotationAxis[CiZ] = 1.0;
             rotationAxis[CiW] = 1.0;
             
-            quaternionInitialize(offsetQuaternion, rotationAxis, bankOffset);
+            quaternionInitialize(offsetQuaternion, rotationAxis, offset);
             
             // pull the quaternion from CoreMotion
             // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
@@ -227,16 +232,18 @@
             finalQuaternion[QiY] = -self.quaternion.x;
             finalQuaternion[QiX] = -self.quaternion.y;
             
+            // Apply the offset to the quaternion we received from CoreMotion
+            // and then turn the whole think into a rotation matrix
+            // --------------------------------------------------------------------
+            quaternionMultiply(offsetQuaternion, finalQuaternion);
+            
             break;
         }
         default:
             break;
     }
     
-    // Apply the offset to the quaternion we received from CoreMotion
-    // and then turn the whole think into a rotation matrix
-    // --------------------------------------------------------------------
-    quaternionMultiply(offsetQuaternion, finalQuaternion);
+    // transform the finalQuaternion to a rotation matrix
     quaternionToMatrix(finalQuaternion, metalParam.rotationMatrix);
     
     // the HFOV and VFOV of the viewing volume used to generate
