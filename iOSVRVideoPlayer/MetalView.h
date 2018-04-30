@@ -25,9 +25,7 @@
 @property (nonatomic) CVPixelBufferRef pixelBuffer; 
 @property (nonatomic) CFTimeInterval inputTime;
 
-@property (nonatomic) float heading; // rads
-@property (nonatomic) float pitch; // rads
-@property (nonatomic) float bank; // rads
+@property (nonatomic) CMQuaternion quaternion;
 
 
 -(void)render:(MTKView*)view;

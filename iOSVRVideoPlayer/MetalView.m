@@ -15,12 +15,6 @@
     self = [super initWithCoder:coder];
     if(self)
     {
-        // init basic properties
-        // ******************************
-        self.heading = 45 * DegToRad;
-        self.pitch = 45 * DegToRad;
-        self.bank = 0 * DegToRad;
-        
         _pixelBuffer = nil;
         
         // init metal related props
@@ -155,9 +149,7 @@
     
     // Build up the rest of the necessary information
     // ------------------------------------------------------------
-    float headingOffset = 0;
-    float pitchOffset = 0;
-    float bankOffset = 0;
+    float pitchOffset = PIOver2;
     
     float HFOV = 45.0 * DegToRad;
     
@@ -181,59 +173,35 @@
     float dstToEquirectPixDensity = 1.0 / equirectToDstPixDensity;
     
     float rotationAxis[4];
-    float headingQuaternion [4], pitchQuaternion [4], bankQuaternion [4];
+    float offsetQuaternion [4], finalQuaternion [4];
     
     // the Space here is mathematical cartesian space with the XY plane on a sheet of paper laying on the table
     // and the Z axis pointing straight up out of the table. Generally computer graphic cartesian space has Z going into and
     // out of the image plane, but with mathematical cartesian space, it is Y that goes into and out of the image plane
     // ---------------------------------------------------------------------------------------------------------------------
     
-    // ----------------------------------------------------------
-    // ----------------------------------------------------------
-    // set up the rotation matrix using quaternions. This
-    // occurs by successively storing up rotations in the
-    // 'totalQuaternion', though to do so we have to prepare
-    // the axis of each rotation as we go.
-    // ----------------------------------------------------------
-    // ----------------------------------------------------------
-    
-//    self.heading = 0;
-//    self.pitch = -PIOver2;
-//    self.bank = 0;
-    
-    // heading rotation is about the Z axis
-    // --------------------------------------------------------------------
-    rotationAxis[CiX] = 0.0;
-    rotationAxis[CiY] = 0.0;
-    rotationAxis[CiZ] = 1.0;
-    rotationAxis[CiW] = 1.0;
-
-    quaternionInitialize(headingQuaternion, rotationAxis, self.heading - headingOffset);
-
-    // pitch rotation is about the Y axis
+    // set up the only necessary offset, which is pitch rotation is about the Y axis
     // --------------------------------------------------------------------
     rotationAxis[CiX] = 0.0;
     rotationAxis[CiY] = 1.0;
     rotationAxis[CiZ] = 0.0;
     rotationAxis[CiW] = 1.0;
 
-    quaternionInitialize(pitchQuaternion, rotationAxis, self.pitch - pitchOffset);
-
-    // bank rotation is about the X axis
+    quaternionInitialize(offsetQuaternion, rotationAxis, pitchOffset);
+    
+    // pull the quaternion from CoreMotion
+    // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
     // --------------------------------------------------------------------
-    rotationAxis[CiX] = 1.0;
-    rotationAxis[CiY] = 0.0;
-    rotationAxis[CiZ] = 0.0;
-    rotationAxis[CiW] = 1.0;
-
-    quaternionInitialize(bankQuaternion, rotationAxis, self.bank - bankOffset);
-
-  //  NSLog(@"Heading: %.2f Pitch: %.2f Bank: %.2f", self.heading - headingOffset, self.pitch - pitchOffset, self.bank - bankOffset);
-
-    // build up the total rotation and store it in the rotationMatrix in the metal param
-    quaternionMultiply(headingQuaternion, pitchQuaternion);
-    quaternionMultiply(pitchQuaternion, bankQuaternion);
-    quaternionToMatrix(bankQuaternion, metalParam.rotationMatrix);
+    finalQuaternion[QiW] = self.quaternion.w;
+    finalQuaternion[QiX] = -self.quaternion.z;
+    finalQuaternion[QiY] = -self.quaternion.x;
+    finalQuaternion[QiZ] = self.quaternion.y;
+    
+    // Apply the offset to the quaternion we received from CoreMotion
+    // and then turn the whole think into a rotation matrix
+    // --------------------------------------------------------------------
+    quaternionMultiply(offsetQuaternion, finalQuaternion);
+    quaternionToMatrix(finalQuaternion, metalParam.rotationMatrix);
     
     // load up the rest of the metal params
     metalParam.dstToEquirectPixDensity = dstToEquirectPixDensity;
@@ -283,20 +251,8 @@
     //NSLog(@"Roll: %.2f Pitch: %.2f Yaw: %.2f", motion.attitude.roll, motion.attitude.pitch, motion.attitude.yaw);
     //NSLog(@"GX: %.2f GY: %.2f GZ: %.2f", motion.gravity.x, motion.gravity.y, motion.gravity.z);
     //NSLog(@"QW: %0.2f QX: %0.2f QY: %0.2f QZ: %0.2f", motion.attitude.quaternion.w, motion.attitude.quaternion.x, motion.attitude.quaternion.y, motion.attitude.quaternion.z);
-    self.heading = motion.attitude.yaw;
-//    self.pitch = -motion.attitude.pitch; // #error try subtracting here instead...
-    self.bank = motion.attitude.roll;
-    
-    if(motion.gravity.z >= 0)
-    {
-        self.pitch = -(PIOver2 - motion.attitude.pitch);
-    }
-    else
-    {
-        self.heading = motion.attitude.yaw;
-        self.pitch = PIOver2 - motion.attitude.pitch;
-        self.bank = motion.attitude.roll;
-    }
+
+    self.quaternion = motion.attitude.quaternion;
 }
 
 -(MTLSize)threadsPerGroup {
