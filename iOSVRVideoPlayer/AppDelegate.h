@@ -13,8 +13,9 @@
 @property (strong, nonatomic) UIWindow *window;
 
 
-
+-(NSURL*) firstMovieURL;
 -(void) clearMovieFilesFromTmpDirSparingURL:(NSURL*)exceptThisURL;
+
 
 
 @end

@@ -30,7 +30,8 @@ typedef enum PlayerStateTypes { PlayerState_Playing = 0, PlayerState_Stopped } P
 - (IBAction)hitPlayerPreviewButton:(UIButton *)sender;
 - (void)hitPlayerPreviewButtonLongPress:(UILongPressGestureRecognizer*)gesture;
 
--(void) pickAndLoadMovieIntoPlayer;
+-(void) pickMovie;
+-(void) loadMovieIntoPlayer:(NSURL*)movieURL;
 -(void) playerDidFinishPlaying:(NSNotification*)notification;
 -(void) updatePreviewOrientation;
 

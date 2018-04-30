@@ -48,18 +48,28 @@
         // register for a notification that that the player has stopped playing because it played until the end
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
         
-        // force request to access photos library
-        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-            if(status != PHAuthorizationStatusAuthorized)
-            {
-                NSLog(@"*** Photo Library Access Authorization Not Granted !!! ***");
-            }
-            else
-            {
-                // if we are granted access, show picker and allow for the loading of a movie
-                [self pickAndLoadMovieIntoPlayer];
-            }
-        }];
+        // try to load the existing movie, and if that doesn't exist, pop up the picker
+        AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+        NSURL* preloadedMovieURL = [appDelegate firstMovieURL];
+        if(nil != preloadedMovieURL)
+        {
+            [self loadMovieIntoPlayer:preloadedMovieURL];
+        }
+        else
+        {
+            // force request to access photos library
+            [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                if(status != PHAuthorizationStatusAuthorized)
+                {
+                    NSLog(@"*** Photo Library Access Authorization Not Granted !!! ***");
+                }
+                else
+                {
+                    // if we are granted access, show picker and allow for the loading of a movie
+                    [self pickMovie];
+                }
+            }];
+        }
         
         self.viewControllerHasMadeFirstAppearance = YES;
     }
@@ -98,7 +108,7 @@
         self.playerState = PlayerState_Stopped;
         [self.player pause];
         
-        [self pickAndLoadMovieIntoPlayer];
+        [self pickMovie];
     }
 }
 
@@ -115,20 +125,7 @@
         AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
         [appDelegate clearMovieFilesFromTmpDirSparingURL:mediaURL];
         
-        self.playerItem = [AVPlayerItem playerItemWithURL:mediaURL];
-        self.playerItemVideoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:@{(id)kCVPixelBufferPixelFormatTypeKey:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA]}];
-        [self.playerItem addOutput:self.playerItemVideoOutput];
-        
-        [self.player replaceCurrentItemWithPlayerItem:self.playerItem];
-        
-//        AVComposition *composition = [FileUtilities compositionFromAsset:mediaURL withNormIn:0.0 andNormOut:1.0];
-//        if(composition)
-//        {
-//            [self.player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithAsset:composition]];
-//        }
-        
-        self.playerState = PlayerState_Playing;
-        [self.player play];
+        [self loadMovieIntoPlayer:mediaURL];
     }
     
     [picker dismissViewControllerAnimated:YES completion:nil];
@@ -140,7 +137,7 @@
 }
 
 #pragma mark - Player Utils
--(void) pickAndLoadMovieIntoPlayer {
+-(void) pickMovie {
     if([PHPhotoLibrary authorizationStatus] != PHAuthorizationStatusAuthorized)
         return;
     
@@ -152,6 +149,23 @@
     picker.allowsEditing = NO;
     picker.videoQuality = UIImagePickerControllerQualityTypeHigh;
     [self presentViewController:picker animated:YES completion:nil];
+}
+
+-(void) loadMovieIntoPlayer:(NSURL*)movieURL {
+    self.playerItem = [AVPlayerItem playerItemWithURL:movieURL];
+    self.playerItemVideoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:@{(id)kCVPixelBufferPixelFormatTypeKey:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA]}];
+    [self.playerItem addOutput:self.playerItemVideoOutput];
+    
+    [self.player replaceCurrentItemWithPlayerItem:self.playerItem];
+    
+    //        AVComposition *composition = [FileUtilities compositionFromAsset:mediaURL withNormIn:0.0 andNormOut:1.0];
+    //        if(composition)
+    //        {
+    //            [self.player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithAsset:composition]];
+    //        }
+    
+    self.playerState = PlayerState_Playing;
+    [self.player play];
 }
 
 -(void) playerDidFinishPlaying:(NSNotification*)notification {
