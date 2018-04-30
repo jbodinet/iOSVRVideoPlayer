@@ -48,6 +48,9 @@
         // register for a notification that that the player has stopped playing because it played until the end
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
         
+        // capture the orientation
+        self.metalView.orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        
         // try to load the existing movie, and if that doesn't exist, pop up the picker
         AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
         NSURL* preloadedMovieURL = [appDelegate firstMovieURL];
@@ -178,6 +181,7 @@
 -(void) updatePreviewOrientation {
     // update the bounds of the metal drawable
     self.metalView.drawableSize = CGSizeMake(self.metalView.bounds.size.width, self.metalView.bounds.size.height);
+    self.metalView.orientation = [[UIApplication sharedApplication] statusBarOrientation];
 }
 
 #pragma mark - CADisplayLink

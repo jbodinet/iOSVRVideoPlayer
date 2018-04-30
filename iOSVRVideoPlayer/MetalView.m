@@ -16,6 +16,7 @@
     if(self)
     {
         _pixelBuffer = nil;
+        self.landscapeOrientationHFOVRadians = 60.0 * DegToRad;
         
         // init metal related props
         // ******************************
@@ -135,11 +136,6 @@
     // set the compute pipeline
     [commandEncoder setComputePipelineState:self.filterState];
     
-    // TEST ONLY
-    // ******************************
-    // ******************************
-    // ******************************
-    
     // The metalParam
     MetalParam metalParam;
     
@@ -149,19 +145,99 @@
     
     // Build up the rest of the necessary information
     // ------------------------------------------------------------
-    float pitchOffset = PIOver2;
     
-    float HFOV = 45.0 * DegToRad;
+    float rotationAxis[4];
+    float offsetQuaternion [4], finalQuaternion [4];
+    
+    // the Space here is mathematical cartesian space with the XY plane on a sheet of paper laying on the table
+    // and the Z axis pointing straight up out of the table. Generally computer graphic cartesian space has Z going into and
+    // out of the image plane, but with mathematical cartesian space, it is Y that goes into and out of the image plane
+    // ---------------------------------------------------------------------------------------------------------------------
+    
+    
+    
+    // Handle things differently based upon orientation
+    // --------------------------------------------------------------------
+    float HFOV = self.landscapeOrientationHFOVRadians;
+    
+    float dstWidth = self.drawableSize.width;
+    float dstHeight = self.drawableSize.height;
     
     float equirectWidth = srcTextureWidth;
     float equirectHeight = srcTextureHeight;
     
     float halfEquirectWidth = equirectWidth * 0.5;
     
-    float dstWidth = self.drawableSize.width;
-    float dstHeight = self.drawableSize.height;
-    
     float halfDstWidth = dstWidth * 0.5;
+    
+    switch(self.orientation)
+    {
+        case UIInterfaceOrientationPortrait:
+        case UIInterfaceOrientationPortraitUpsideDown:
+        {
+            const float pitchOffset = PIOver2;
+            
+            // must derive HFOV from landscapeFOV and widths and heights.
+            // NOTE:
+            //  - dstWidth here is the width of the portrait-oriented dst img
+            //  - dstHeight here is the width of the landscape-oriented dst img
+            HFOV = 2.0 * atan2((0.5 * dstWidth), ((0.5 * dstHeight) / tan(0.5 * self.landscapeOrientationHFOVRadians)));
+            
+            // set up the only necessary offset, which is pitch rotation is about the Y axis
+            // --------------------------------------------------------------------
+            rotationAxis[CiX] = 0.0;
+            rotationAxis[CiY] = 1.0;
+            rotationAxis[CiZ] = 0.0;
+            rotationAxis[CiW] = 1.0;
+            
+            quaternionInitialize(offsetQuaternion, rotationAxis, pitchOffset);
+            
+            // pull the quaternion from CoreMotion
+            // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
+            // --------------------------------------------------------------------
+            finalQuaternion[QiW] = self.quaternion.w;
+            finalQuaternion[QiX] = -self.quaternion.z;
+            finalQuaternion[QiY] = -self.quaternion.x;
+            finalQuaternion[QiZ] = self.quaternion.y;
+            
+            break;
+        }
+        case UIInterfaceOrientationLandscapeLeft:
+        case UIInterfaceOrientationLandscapeRight:
+        {
+            const float bankOffset = PIOver2;
+            
+            // can use this as-is
+            HFOV = self.landscapeOrientationHFOVRadians;
+            
+            // set up the only necessary offset, which is pitch rotation is about the Y axis
+            // --------------------------------------------------------------------
+            rotationAxis[CiX] = 1.0;
+            rotationAxis[CiY] = 0.0;
+            rotationAxis[CiZ] = 0.0;
+            rotationAxis[CiW] = 1.0;
+            
+            quaternionInitialize(offsetQuaternion, rotationAxis, bankOffset);
+            
+            // pull the quaternion from CoreMotion
+            // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
+            // --------------------------------------------------------------------
+            finalQuaternion[QiW] = self.quaternion.w;
+            finalQuaternion[QiZ] = -self.quaternion.z;
+            finalQuaternion[QiY] = -self.quaternion.x;
+            finalQuaternion[QiX] = self.quaternion.y;
+            
+            break;
+        }
+        default:
+            break;
+    }
+    
+    // Apply the offset to the quaternion we received from CoreMotion
+    // and then turn the whole think into a rotation matrix
+    // --------------------------------------------------------------------
+    quaternionMultiply(offsetQuaternion, finalQuaternion);
+    quaternionToMatrix(finalQuaternion, metalParam.rotationMatrix);
     
     // the HFOV and VFOV of the viewing volume used to generate
     // the dst image when including perspective in the process
@@ -172,37 +248,6 @@
     float equirectToDstPixDensity = (halfDstWidth) / ((halfHFOV / PI) * halfEquirectWidth);
     float dstToEquirectPixDensity = 1.0 / equirectToDstPixDensity;
     
-    float rotationAxis[4];
-    float offsetQuaternion [4], finalQuaternion [4];
-    
-    // the Space here is mathematical cartesian space with the XY plane on a sheet of paper laying on the table
-    // and the Z axis pointing straight up out of the table. Generally computer graphic cartesian space has Z going into and
-    // out of the image plane, but with mathematical cartesian space, it is Y that goes into and out of the image plane
-    // ---------------------------------------------------------------------------------------------------------------------
-    
-    // set up the only necessary offset, which is pitch rotation is about the Y axis
-    // --------------------------------------------------------------------
-    rotationAxis[CiX] = 0.0;
-    rotationAxis[CiY] = 1.0;
-    rotationAxis[CiZ] = 0.0;
-    rotationAxis[CiW] = 1.0;
-
-    quaternionInitialize(offsetQuaternion, rotationAxis, pitchOffset);
-    
-    // pull the quaternion from CoreMotion
-    // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
-    // --------------------------------------------------------------------
-    finalQuaternion[QiW] = self.quaternion.w;
-    finalQuaternion[QiX] = -self.quaternion.z;
-    finalQuaternion[QiY] = -self.quaternion.x;
-    finalQuaternion[QiZ] = self.quaternion.y;
-    
-    // Apply the offset to the quaternion we received from CoreMotion
-    // and then turn the whole think into a rotation matrix
-    // --------------------------------------------------------------------
-    quaternionMultiply(offsetQuaternion, finalQuaternion);
-    quaternionToMatrix(finalQuaternion, metalParam.rotationMatrix);
-    
     // load up the rest of the metal params
     metalParam.dstToEquirectPixDensity = dstToEquirectPixDensity;
     metalParam.halfHFOV = halfHFOV;
@@ -211,11 +256,6 @@
     metalParam.equirectWidth = equirectWidth;
     metalParam.equirectHeight = equirectHeight;
     metalParam.radius = 1.0;
-
-    // TEST ONLY OVER
-    // ******************************
-    // ******************************
-    // ******************************
     
     // create the params buffer
     id<MTLBuffer> paramsBuffer = [self.device newBufferWithBytes:&(metalParam) length:sizeof(metalParam) options:MTLResourceOptionCPUCacheModeDefault];

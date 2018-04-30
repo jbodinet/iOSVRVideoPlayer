@@ -25,6 +25,8 @@
 @property (nonatomic) CVPixelBufferRef pixelBuffer; 
 @property (nonatomic) CFTimeInterval inputTime;
 
+@property (nonatomic) float landscapeOrientationHFOVRadians;
+@property (nonatomic) UIInterfaceOrientation orientation;
 @property (nonatomic) CMQuaternion quaternion;
 
 
