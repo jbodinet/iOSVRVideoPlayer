@@ -205,7 +205,7 @@
         case UIInterfaceOrientationLandscapeLeft:
         case UIInterfaceOrientationLandscapeRight:
         {
-            const float bankOffset = PIOver2;
+            const float bankOffset = -PIOver2;
             
             // can use this as-is
             HFOV = self.landscapeOrientationHFOVRadians;
@@ -223,9 +223,9 @@
             // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
             // --------------------------------------------------------------------
             finalQuaternion[QiW] = self.quaternion.w;
-            finalQuaternion[QiZ] = -self.quaternion.z;
+            finalQuaternion[QiZ] = self.quaternion.z;
             finalQuaternion[QiY] = -self.quaternion.x;
-            finalQuaternion[QiX] = self.quaternion.y;
+            finalQuaternion[QiX] = -self.quaternion.y;
             
             break;
         }
