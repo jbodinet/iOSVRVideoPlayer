@@ -240,7 +240,7 @@
         }
         case UIInterfaceOrientationLandscapeLeft:
         {
-            const float offset = -PIOver2;
+            const float offset = PIOver2;
             float offsetQuaternion [4];
             
             // can use this as-is
@@ -259,8 +259,8 @@
             // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
             // --------------------------------------------------------------------
             finalQuaternion[QiW] = self.quaternion.w;
-            finalQuaternion[QiX] = self.quaternion.z;
-            finalQuaternion[QiY] = self.quaternion.y;
+            finalQuaternion[QiX] = -self.quaternion.z;
+            finalQuaternion[QiY] = -self.quaternion.y;
             finalQuaternion[QiZ] = -self.quaternion.x;
             
             // Apply the offset to the quaternion we received from CoreMotion
