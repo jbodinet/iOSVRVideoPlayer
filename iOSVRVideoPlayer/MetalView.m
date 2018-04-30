@@ -206,7 +206,6 @@
             
             break;
         }
-        case UIInterfaceOrientationLandscapeLeft:
         case UIInterfaceOrientationLandscapeRight:
         {
             const float offset = PIOver2;
@@ -231,6 +230,38 @@
             finalQuaternion[QiX] = -self.quaternion.z;
             finalQuaternion[QiY] = self.quaternion.y;
             finalQuaternion[QiZ] = self.quaternion.x;
+            
+            // Apply the offset to the quaternion we received from CoreMotion
+            // and then turn the whole think into a rotation matrix
+            // --------------------------------------------------------------------
+            quaternionMultiply(offsetQuaternion, finalQuaternion);
+            
+            break;
+        }
+        case UIInterfaceOrientationLandscapeLeft:
+        {
+            const float offset = -PIOver2;
+            float offsetQuaternion [4];
+            
+            // can use this as-is
+            HFOV = self.landscapeOrientationHFOVRadians;
+            
+            // set up the only necessary offset, which is pitch rotation is about the Y axis
+            // --------------------------------------------------------------------
+            rotationAxis[CiX] = 0.0;
+            rotationAxis[CiY] = 1.0;
+            rotationAxis[CiZ] = 0.0;
+            rotationAxis[CiW] = 1.0;
+            
+            quaternionInitialize(offsetQuaternion, rotationAxis, offset);
+            
+            // pull the quaternion from CoreMotion
+            // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
+            // --------------------------------------------------------------------
+            finalQuaternion[QiW] = self.quaternion.w;
+            finalQuaternion[QiX] = self.quaternion.z;
+            finalQuaternion[QiY] = self.quaternion.y;
+            finalQuaternion[QiZ] = -self.quaternion.x;
             
             // Apply the offset to the quaternion we received from CoreMotion
             // and then turn the whole think into a rotation matrix
