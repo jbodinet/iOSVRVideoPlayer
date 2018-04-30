@@ -13,6 +13,9 @@
 
 #import "MetalParamWindowFromEquirectOptimized.h"
 
+extern const float landscapeOrientationHFOVRadiansMin;
+extern const float landscapeOrientationHFOVRadiansMax;
+
 @interface MetalView : MTKView
 
 @property (strong, nonatomic) id<MTLCommandQueue> commandQueue;

@@ -25,6 +25,9 @@
     
     // add a long press gesture recognizer to player preview button
     [self.playerPreviewButton addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(hitPlayerPreviewButtonLongPress:)]];
+    
+    // add a pinch gesture recogniser to player preview button
+    [self.playerPreviewButton addGestureRecognizer:[[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(playerPreviewButtonPinch:)]];
 }
 
 -(void)viewDidAppear:(BOOL)animated {
@@ -113,6 +116,24 @@
         
         [self pickMovie];
     }
+}
+
+- (void)playerPreviewButtonPinch:(UIPinchGestureRecognizer *)sender {
+    NSLog(@"PlayerPreviewButton PINCH PRESS Scale:%0.2f", sender.scale);
+    
+    float newFOV = self.metalView.landscapeOrientationHFOVRadians / sender.scale;
+    
+    if(newFOV < landscapeOrientationHFOVRadiansMin)
+        newFOV = landscapeOrientationHFOVRadiansMin;
+    else if(newFOV > landscapeOrientationHFOVRadiansMax)
+        newFOV = landscapeOrientationHFOVRadiansMax;
+    
+    self.metalView.landscapeOrientationHFOVRadians = newFOV;
+    
+    // setting the pinch gesture recognizer back to 1.0
+    // at the end of this call will dramatically slow down
+    // the scaling effect
+    [sender setScale:1.0];
 }
 
 #pragma mark - UIImagePickerControllerDelegate

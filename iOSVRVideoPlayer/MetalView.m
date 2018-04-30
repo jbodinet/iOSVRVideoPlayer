@@ -9,6 +9,9 @@
 #import "MetalView.h"
 #import "SphericalMath.h"
 
+const float landscapeOrientationHFOVRadiansMin = 15 * ((float) ( PI_RAW / 180.0 ));
+const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0 ));
+
 @implementation MetalView
 
 -(instancetype)initWithCoder:(NSCoder *)coder {
