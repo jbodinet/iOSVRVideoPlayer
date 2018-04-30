@@ -10,11 +10,12 @@
 #import <Photos/Photos.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
+#import "AppDelegate.h"
 #import "MetalView.h"
 
 typedef enum PlayerStateTypes { PlayerState_Playing = 0, PlayerState_Stopped } PlayerState;
 
-@interface ViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface ViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, AppDelegateTerminationDelegate>
 
 @property (strong, nonatomic) IBOutlet MetalView *metalView;
 @property (strong, nonatomic) IBOutlet UIButton *playerPreviewButton;

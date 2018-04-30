@@ -17,6 +17,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    self.appWillTerminateListeners = [NSMutableSet set];
+    
     return YES;
 }
 
@@ -46,7 +48,18 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     NSLog(@"Application is shutting down!!!");
     
-   // [self clearMovieFilesFromTmpDirSparingURL:nil];
+    // Clear all movies stored in app data, if desired...
+    // [self clearMovieFilesFromTmpDirSparingURL:nil];
+    
+    // go through all listners and tell them the app is terminating
+    for(NSObject *obj in self.appWillTerminateListeners)
+    {
+        if([obj conformsToProtocol:@protocol(AppDelegateTerminationDelegate)])
+        {
+            NSObject <AppDelegateTerminationDelegate> *del = (NSObject <AppDelegateTerminationDelegate> *)obj;
+            [del appWillTerminate];
+        }
+    }
 }
 
 -(NSURL*) firstMovieURL {

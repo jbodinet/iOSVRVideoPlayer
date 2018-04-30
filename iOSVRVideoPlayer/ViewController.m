@@ -10,6 +10,8 @@
 #import "AppDelegate.h"
 #import "FileUtilities.h"
 
+static NSString * const fovPrefs = @"FOVPrefs";
+
 @interface ViewController ()
 
 @end
@@ -19,6 +21,20 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+    // set ourselves as an AppWillTerminateListener to the AppDelegate
+    // -------------------------------------------------------------
+    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    [appDelegate.appWillTerminateListeners addObject:self];
+    
+    // load prefs
+    // -------------------------------------------------------------
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    
+    if([userDefaults objectForKey:fovPrefs])
+    {
+        self.metalView.landscapeOrientationHFOVRadians = [userDefaults floatForKey:fovPrefs];
+    }
     
     self.viewControllerHasMadeFirstAppearance = NO;
     self.playerState = PlayerState_Stopped;
@@ -233,6 +249,14 @@
 
 -(BOOL)prefersStatusBarHidden {
     return YES;
+}
+
+#pragma mark - AppDelegateTerminationDelegate
+-(void)appWillTerminate {
+    // store prefs
+    // -------------------------------------------------------------
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults setFloat:self.metalView.landscapeOrientationHFOVRadians forKey:fovPrefs];
 }
 
 @end

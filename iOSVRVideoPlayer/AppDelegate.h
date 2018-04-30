@@ -8,10 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol AppDelegateTerminationDelegate
+
+@required
+-(void)appWillTerminate;
+
+@end;
+
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
-
+@property (strong, nonatomic) NSMutableSet *appWillTerminateListeners;
 
 -(NSURL*) firstMovieURL;
 -(void) clearMovieFilesFromTmpDirSparingURL:(NSURL*)exceptThisURL;
