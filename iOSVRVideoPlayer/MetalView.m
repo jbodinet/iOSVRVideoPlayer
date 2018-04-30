@@ -21,6 +21,8 @@
         self.pitch = 45 * DegToRad;
         self.bank = 0 * DegToRad;
         
+        _pixelBuffer = nil;
+        
         // init metal related props
         // ******************************
         NSError *errors;
@@ -73,7 +75,10 @@
         // ***************************************************
         self.motionManager = [[CMMotionManager alloc] init];
         self.motionManager.deviceMotionUpdateInterval = 0.01f;
-        [self.motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
+//        [self.motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
+//            [self processMotion:motion];
+//        }];
+        [self.motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryZVertical toQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
             [self processMotion:motion];
         }];
     }
@@ -82,34 +87,31 @@
 }
 
 -(void) setPixelBuffer:(CVPixelBufferRef)pixelBuffer {
-    self->_pixelBuffer = pixelBuffer;
+    if(_pixelBuffer)
+        CVBufferRelease(_pixelBuffer);
+    _pixelBuffer = nil;
+    _pixelBuffer = pixelBuffer;
     [self setNeedsDisplay];
 }
 
 -(void)drawRect:(CGRect)rect {
-    if(rect.size.width > 0 || rect.size.height > 0)
-    {
-        [self render:self];
+    @autoreleasepool {
+        if(rect.size.width > 0 || rect.size.height > 0)
+        {
+            [self render:self];
+        }
     }
 }
 
 -(void)render:(MTKView*)view {
-    // grab local pixelBuffer ref
-    CVPixelBufferRef pixelBuffer = self.pixelBuffer;
-    if(!pixelBuffer)
-    {
-        NSLog(@"render: called without pixelBuffer!!!");
-        return;
-    }
-    
     // pull the dimensions from pixelBuffer
-    size_t srcTextureWidth = CVPixelBufferGetWidth(pixelBuffer);
-    size_t srcTextureHeight = CVPixelBufferGetHeight(pixelBuffer);
+    size_t srcTextureWidth = CVPixelBufferGetWidth(_pixelBuffer);
+    size_t srcTextureHeight = CVPixelBufferGetHeight(_pixelBuffer);
     
     // Converts the pixelBuffer in a Metal texture.
     CVMetalTextureRef srcTextureRef;
     id<MTLTexture> srcTexture;
-    if(kCVReturnSuccess != CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, self.textureCache, pixelBuffer, nil, MTLPixelFormatBGRA8Unorm, srcTextureWidth, srcTextureHeight, 0, &srcTextureRef))
+    if(kCVReturnSuccess != CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, _pixelBuffer, nil, MTLPixelFormatBGRA8Unorm, srcTextureWidth, srcTextureHeight, 0, &srcTextureRef))
     {
         NSLog(@"render: called CVMetalTextureCacheCreateTextureFromImage() failed!!!");
         return;
@@ -125,6 +127,10 @@
         NSLog(@"render: called without drawable!!!");
         return;
     }
+    
+    if(_pixelBuffer)
+        CVBufferRelease(_pixelBuffer);
+    _pixelBuffer = nil;
     
     // create a command buffer
     id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
@@ -149,8 +155,8 @@
     
     // Build up the rest of the necessary information
     // ------------------------------------------------------------
-    float headingOffset = 0; // -PI;
-    float pitchOffset = PI2;
+    float headingOffset = 0;
+    float pitchOffset = 0;
     float bankOffset = 0;
     
     float HFOV = 45.0 * DegToRad;
@@ -191,6 +197,10 @@
     // ----------------------------------------------------------
     // ----------------------------------------------------------
     
+//    self.heading = 0;
+//    self.pitch = -PIOver2;
+//    self.bank = 0;
+    
     // heading rotation is about the Z axis
     // --------------------------------------------------------------------
     rotationAxis[CiX] = 0.0;
@@ -217,6 +227,8 @@
     rotationAxis[CiW] = 1.0;
     
     quaternionInitialize(bankQuaternion, rotationAxis, self.bank - bankOffset);
+    
+    NSLog(@"Heading: %.2f Pitch: %.2f Bank: %.2f", self.heading - headingOffset, self.pitch - pitchOffset, self.bank - bankOffset);
     
     // build up the total rotation and store it in the rotationMatrix in the metal param
     quaternionMultiply(headingQuaternion, pitchQuaternion);
@@ -256,13 +268,35 @@
     
     // Commit the command buffer for execution.
     [commandBuffer commit];
+    
+    // In order to avoid a serious memory leak, must
+    // ditch this texture reference here.
+    // *** HOWEVER!!! ***
+    // Is it fully safe to delete this here? Or
+    // do we need to find some callback somewhere
+    // where we know the texture ref is 100% certain
+    // to be no longer used?
+    CVBufferRelease(srcTextureRef);
 }
 
 -(void)processMotion:(CMDeviceMotion*)motion {
-    NSLog(@"Roll: %.2f Pitch: %.2f Yaw: %.2f", motion.attitude.roll, motion.attitude.pitch, motion.attitude.yaw);
+//    NSLog(@"Roll: %.2f Pitch: %.2f Yaw: %.2f", motion.attitude.roll, motion.attitude.pitch, motion.attitude.yaw);
+//    NSLog(@"GX: %.2f GY: %.2f GZ: %.2f", motion.gravity.x, motion.gravity.y, motion.gravity.z);
     self.heading = motion.attitude.yaw;
-    self.pitch = -motion.attitude.pitch;
+//    self.pitch = -motion.attitude.pitch; // #error try subtracting here instead...
     self.bank = motion.attitude.roll;
+    
+    
+    if(motion.gravity.z >= 0)
+    {
+        self.pitch = -(PIOver2 - motion.attitude.pitch);
+    }
+    else
+    {
+        self.heading = motion.attitude.yaw;
+        self.pitch = PIOver2 - motion.attitude.pitch;
+        self.bank = motion.attitude.roll;
+    }
 }
 
 -(MTLSize)threadsPerGroup {

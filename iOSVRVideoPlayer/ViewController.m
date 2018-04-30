@@ -174,8 +174,7 @@
     
     if([self.playerItemVideoOutput hasNewPixelBufferForItemTime:currentTime])
     {
-        CVPixelBufferRef pixelBufferRef = [self.playerItemVideoOutput copyPixelBufferForItemTime:currentTime itemTimeForDisplay:nil];
-        self.metalView.pixelBuffer = pixelBufferRef;
+        self.metalView.pixelBuffer = [self.playerItemVideoOutput copyPixelBufferForItemTime:currentTime itemTimeForDisplay:nil];
         self.metalView.inputTime = currentTime.value/(double)currentTime.timescale;
     }
 }
