@@ -14,10 +14,10 @@
 		032468762093A559001C845A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 032468742093A559001C845A /* LaunchScreen.storyboard */; };
 		032468792093A559001C845A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 032468782093A559001C845A /* main.m */; };
 		032468812093B950001C845A /* FileUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 0324687F2093B950001C845A /* FileUtilities.m */; };
-		032468842093C986001C845A /* MetalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 032468832093C986001C845A /* MetalView.m */; };
-		032468882093D613001C845A /* MetalKernelWindowFromEquirectOptimized.metal in Sources */ = {isa = PBXBuildFile; fileRef = 032468852093D613001C845A /* MetalKernelWindowFromEquirectOptimized.metal */; };
-		032468892093D613001C845A /* MetalParamWindowFromEquirectOptimized.c in Sources */ = {isa = PBXBuildFile; fileRef = 032468872093D613001C845A /* MetalParamWindowFromEquirectOptimized.c */; };
-		0349F3B72094C5170001C9A6 /* SphericalMath.c in Sources */ = {isa = PBXBuildFile; fileRef = 0349F3B62094C5170001C9A6 /* SphericalMath.c */; };
+		039290DE2097CC41006466BE /* MetalView.m in Sources */ = {isa = PBXBuildFile; fileRef = 039290D72097CC32006466BE /* MetalView.m */; };
+		039290DF2097CC41006466BE /* MetalKernelWindowFromEquirectOptimized.metal in Sources */ = {isa = PBXBuildFile; fileRef = 039290D92097CC40006466BE /* MetalKernelWindowFromEquirectOptimized.metal */; };
+		039290E02097CC41006466BE /* SphericalMath.c in Sources */ = {isa = PBXBuildFile; fileRef = 039290DB2097CC41006466BE /* SphericalMath.c */; };
+		039290E12097CC41006466BE /* MetalParamWindowFromEquirectOptimized.c in Sources */ = {isa = PBXBuildFile; fileRef = 039290DD2097CC41006466BE /* MetalParamWindowFromEquirectOptimized.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,7 +25,7 @@
 		032468692093A558001C845A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		0324686A2093A558001C845A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		0324686C2093A558001C845A /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		0324686D2093A558001C845A /* ViewController.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		0324686D2093A558001C845A /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		032468702093A558001C845A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		032468722093A559001C845A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		032468752093A559001C845A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -33,13 +33,13 @@
 		032468782093A559001C845A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		0324687F2093B950001C845A /* FileUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FileUtilities.m; sourceTree = "<group>"; };
 		032468802093B950001C845A /* FileUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileUtilities.h; sourceTree = "<group>"; };
-		032468822093C986001C845A /* MetalView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetalView.h; sourceTree = "<group>"; };
-		032468832093C986001C845A /* MetalView.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.objc; path = MetalView.m; sourceTree = "<group>"; };
-		032468852093D613001C845A /* MetalKernelWindowFromEquirectOptimized.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = MetalKernelWindowFromEquirectOptimized.metal; sourceTree = "<group>"; };
-		032468862093D613001C845A /* MetalParamWindowFromEquirectOptimized.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetalParamWindowFromEquirectOptimized.h; sourceTree = "<group>"; };
-		032468872093D613001C845A /* MetalParamWindowFromEquirectOptimized.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MetalParamWindowFromEquirectOptimized.c; sourceTree = "<group>"; };
-		0349F3B52094C5010001C9A6 /* SphericalMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SphericalMath.h; sourceTree = "<group>"; };
-		0349F3B62094C5170001C9A6 /* SphericalMath.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = SphericalMath.c; sourceTree = "<group>"; };
+		039290D72097CC32006466BE /* MetalView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetalView.m; sourceTree = "<group>"; };
+		039290D82097CC40006466BE /* SphericalMath.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SphericalMath.h; sourceTree = "<group>"; };
+		039290D92097CC40006466BE /* MetalKernelWindowFromEquirectOptimized.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = MetalKernelWindowFromEquirectOptimized.metal; sourceTree = "<group>"; };
+		039290DA2097CC41006466BE /* MetalParamWindowFromEquirectOptimized.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetalParamWindowFromEquirectOptimized.h; sourceTree = "<group>"; };
+		039290DB2097CC41006466BE /* SphericalMath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SphericalMath.c; sourceTree = "<group>"; };
+		039290DC2097CC41006466BE /* MetalView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetalView.h; sourceTree = "<group>"; };
+		039290DD2097CC41006466BE /* MetalParamWindowFromEquirectOptimized.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MetalParamWindowFromEquirectOptimized.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,13 +81,13 @@
 				032468742093A559001C845A /* LaunchScreen.storyboard */,
 				032468782093A559001C845A /* main.m */,
 				0324686F2093A558001C845A /* Main.storyboard */,
-				032468852093D613001C845A /* MetalKernelWindowFromEquirectOptimized.metal */,
-				032468872093D613001C845A /* MetalParamWindowFromEquirectOptimized.c */,
-				032468862093D613001C845A /* MetalParamWindowFromEquirectOptimized.h */,
-				032468822093C986001C845A /* MetalView.h */,
-				032468832093C986001C845A /* MetalView.m */,
-				0349F3B62094C5170001C9A6 /* SphericalMath.c */,
-				0349F3B52094C5010001C9A6 /* SphericalMath.h */,
+				039290D92097CC40006466BE /* MetalKernelWindowFromEquirectOptimized.metal */,
+				039290DD2097CC41006466BE /* MetalParamWindowFromEquirectOptimized.c */,
+				039290DA2097CC41006466BE /* MetalParamWindowFromEquirectOptimized.h */,
+				039290DC2097CC41006466BE /* MetalView.h */,
+				039290D72097CC32006466BE /* MetalView.m */,
+				039290DB2097CC41006466BE /* SphericalMath.c */,
+				039290D82097CC40006466BE /* SphericalMath.h */,
 				0324686C2093A558001C845A /* ViewController.h */,
 				0324686D2093A558001C845A /* ViewController.m */,
 			);
@@ -165,13 +165,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				0324686E2093A558001C845A /* ViewController.m in Sources */,
-				032468892093D613001C845A /* MetalParamWindowFromEquirectOptimized.c in Sources */,
+				039290E02097CC41006466BE /* SphericalMath.c in Sources */,
 				032468792093A559001C845A /* main.m in Sources */,
-				032468882093D613001C845A /* MetalKernelWindowFromEquirectOptimized.metal in Sources */,
+				039290DF2097CC41006466BE /* MetalKernelWindowFromEquirectOptimized.metal in Sources */,
 				032468812093B950001C845A /* FileUtilities.m in Sources */,
-				0349F3B72094C5170001C9A6 /* SphericalMath.c in Sources */,
 				0324686B2093A558001C845A /* AppDelegate.m in Sources */,
-				032468842093C986001C845A /* MetalView.m in Sources */,
+				039290DE2097CC41006466BE /* MetalView.m in Sources */,
+				039290E12097CC41006466BE /* MetalParamWindowFromEquirectOptimized.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
