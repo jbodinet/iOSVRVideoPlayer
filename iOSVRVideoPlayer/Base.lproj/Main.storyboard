@@ -18,19 +18,27 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mtkView contentMode="scaleToFill" fixedFrame="YES" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="eve-gJ-Mjb" customClass="MetalView">
+                            <mtkView contentMode="scaleToFill" colorPixelFormat="BGRA8Unorm" depthStencilPixelFormat="Depth32Float" translatesAutoresizingMaskIntoConstraints="NO" id="eve-gJ-Mjb" customClass="MetalView">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </mtkView>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EA3-Fr-T2J">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EA3-Fr-T2J">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <connections>
                                     <action selector="hitPlayerPreviewButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="uFY-1v-kZz"/>
                                 </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="EA3-Fr-T2J" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailing" id="0qb-rp-5lA"/>
+                            <constraint firstItem="eve-gJ-Mjb" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="4Sn-PY-XWb"/>
+                            <constraint firstItem="EA3-Fr-T2J" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="8hU-pd-03f"/>
+                            <constraint firstItem="eve-gJ-Mjb" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="M0D-hq-uoq"/>
+                            <constraint firstItem="EA3-Fr-T2J" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="V7H-k1-zKh"/>
+                            <constraint firstItem="eve-gJ-Mjb" firstAttribute="bottom" secondItem="8bC-Xf-vdC" secondAttribute="bottom" id="nt7-ZZ-MfA"/>
+                            <constraint firstItem="EA3-Fr-T2J" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="tI4-Tg-xQ4"/>
+                            <constraint firstItem="eve-gJ-Mjb" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailing" id="tWt-77-a7X"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
