@@ -27,6 +27,10 @@ static NSString * const fovPrefs = @"FOVPrefs";
     AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
     [appDelegate.appWillTerminateListeners addObject:self];
     
+    // set ourselves as delegate to the PlayerPreviewButton
+    // -------------------------------------------------------------
+    self.playerPreviewButton.delegate = self;
+    
     // load prefs
     // -------------------------------------------------------------
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
@@ -122,7 +126,7 @@ static NSString * const fovPrefs = @"FOVPrefs";
 
 - (void)hitPlayerPreviewButtonLongPress:(UILongPressGestureRecognizer*)gesture {
     //NSLog(@"PlayerPreviewButton LONG PRESS!!!");
-    
+        
     if ( gesture.state == UIGestureRecognizerStateBegan )
     {
         AudioServicesPlaySystemSound(1520); // vibrate
@@ -267,6 +271,19 @@ static NSString * const fovPrefs = @"FOVPrefs";
     // -------------------------------------------------------------
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     [userDefaults setFloat:self.metalView.landscapeOrientationHFOVRadians forKey:fovPrefs];
+}
+
+#pragma mark - PlayerPreviewButtonTouchTrackingDelegate
+-(void)playerPreviewButtonBeginTrackingDidOccurAtNormX:(CGFloat)normX {
+    NSLog(@"PlayerPreviewBegin:%0.3f", normX);
+}
+
+-(void)playerPreviewButtonContinueTrackingDidOccurAtNormX:(CGFloat)normX {
+    NSLog(@"PlayerPreviewContinue:%0.3f", normX);
+}
+
+-(void)playerPreviewButtonEndTrackingDidOccurAtNormX:(CGFloat)normX {
+    NSLog(@"PlayerPreviewEnd:%0.3f", normX);
 }
 
 @end

@@ -8,6 +8,19 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol PlayerPreviewButtonTouchTrackingDelegate <NSObject>
+
+@required
+-(void)playerPreviewButtonBeginTrackingDidOccurAtNormX:(CGFloat)normX;
+-(void)playerPreviewButtonContinueTrackingDidOccurAtNormX:(CGFloat)normX;
+-(void)playerPreviewButtonEndTrackingDidOccurAtNormX:(CGFloat)normX;
+
+@end
+
 @interface PlayerPreviewButton : UIButton
+
+@property (weak, nonatomic) id <PlayerPreviewButtonTouchTrackingDelegate> delegate;
+
+-(CGFloat)touchToNormX:(UITouch *)touch;
 
 @end

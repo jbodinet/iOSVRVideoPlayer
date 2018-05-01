@@ -16,7 +16,8 @@
 
 typedef enum PlayerStateTypes { PlayerState_Playing = 0, PlayerState_Stopped } PlayerState;
 
-@interface ViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, AppDelegateTerminationDelegate>
+@interface ViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate,
+                                              AppDelegateTerminationDelegate, PlayerPreviewButtonTouchTrackingDelegate>
 
 @property (strong, nonatomic) IBOutlet MetalView *metalView;
 @property (strong, nonatomic) IBOutlet PlayerPreviewButton *playerPreviewButton;
