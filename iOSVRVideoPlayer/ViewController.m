@@ -47,6 +47,7 @@ const float playerPreviewButtonLongPressSuppressionNormXThreshold = 0.05;
     self.playerState = PlayerState_Stopped;
     self.metalView.isPlaying = NO;
     self.playerPreviewButtonTrackingNormXStart = 0.0f;
+    self.playerPreviewButtonTrackingCustomHeadingOffsetRadiansStart = 0.0f;
     self.playerPreviewButtonTrackingSuppressButtonBehavior = NO;
     self.playerPreviewButtonTrackingHijackedByButtonBehavior = NO;
 
@@ -118,6 +119,11 @@ const float playerPreviewButtonLongPressSuppressionNormXThreshold = 0.05;
     if(self.playerPreviewButtonTrackingSuppressButtonBehavior)
         return;
     
+    // However, if this button event snuck in first, then we are
+    // hijacking the tracking
+    // --------------------------------------------------------
+    self.playerPreviewButtonTrackingHijackedByButtonBehavior = YES;
+    
     // Handle the button message
     // --------------------------------------------------------
     switch(self.playerState)
@@ -173,11 +179,13 @@ const float playerPreviewButtonLongPressSuppressionNormXThreshold = 0.05;
     if(self.playerPreviewButtonTrackingSuppressButtonBehavior)
         return;
     
-    // However, if this long press snuck in first, then we are
+    // However, if this pinch operation snuck in first, then we are
     // hijacking the tracking
     // --------------------------------------------------------
     self.playerPreviewButtonTrackingHijackedByButtonBehavior = YES;
     
+    // handle the pinch
+    // --------------------------------------------------------
     float newFOV = self.metalView.landscapeOrientationHFOVRadians / sender.scale;
     
     if(newFOV < landscapeOrientationHFOVRadiansMin)
@@ -246,12 +254,6 @@ const float playerPreviewButtonLongPressSuppressionNormXThreshold = 0.05;
     
     [self.player replaceCurrentItemWithPlayerItem:self.playerItem];
     
-    //        AVComposition *composition = [FileUtilities compositionFromAsset:mediaURL withNormIn:0.0 andNormOut:1.0];
-    //        if(composition)
-    //        {
-    //            [self.player replaceCurrentItemWithPlayerItem:[AVPlayerItem playerItemWithAsset:composition]];
-    //        }
-    
     self.playerState = PlayerState_Playing;
     self.metalView.isPlaying = YES;
     [self.player play];
@@ -311,38 +313,58 @@ const float playerPreviewButtonLongPressSuppressionNormXThreshold = 0.05;
 
 #pragma mark - PlayerPreviewButtonTouchTrackingDelegate
 -(void)playerPreviewButtonBeginTrackingDidOccurAtNormX:(CGFloat)normX {
-    NSLog(@"PlayerPreviewBegin:%0.3f", normX);
+    //NSLog(@"PlayerPreviewBegin:%0.3f", normX);
     
+    // take all of our initial samples
+    // ---------------------------------------------------------
     self.playerPreviewButtonTrackingNormXStart = normX;
+    self.playerPreviewButtonTrackingCustomHeadingOffsetRadiansStart = self.metalView.customHeadingOffsetRadians;
+    
+    // clear out all of our flags
+    // ---------------------------------------------------------
     self.playerPreviewButtonTrackingSuppressButtonBehavior = NO;
     self.playerPreviewButtonTrackingHijackedByButtonBehavior = NO;
 }
 
 -(void)playerPreviewButtonContinueTrackingDidOccurAtNormX:(CGFloat)normX {
-    // always track this
-    // ---------------------------------------------------------
-    
-    
-    // however only act on the information IF it is NOT
+    // only act on the tracking information IF it is NOT
     // the case that tracking has been hijacked by other
     // button behavior
     // ---------------------------------------------------------
     if(!self.playerPreviewButtonTrackingHijackedByButtonBehavior)
     {
-        NSLog(@"PlayerPreviewContinue:%0.3f", normX);
+        //NSLog(@"PlayerPreviewContinue:%0.3f", normX);
         
+        // if we surpass the threshold necessary to start considering this a valid adjustment to custom heading offset
         if(!((normX < (self.playerPreviewButtonTrackingNormXStart + playerPreviewButtonLongPressSuppressionNormXThreshold)) &&
              (normX > (self.playerPreviewButtonTrackingNormXStart - playerPreviewButtonLongPressSuppressionNormXThreshold))))
         {
             self.playerPreviewButtonTrackingSuppressButtonBehavior = YES;
         }
+        else
+        {
+            // until we reach the above tested threshold, we do nothing else
+            // in this entire function--and thus just 'return' here...
+            if(!self.playerPreviewButtonTrackingSuppressButtonBehavior)
+                return;
+        }
         
-   
+        // find out our current norm delta between where the tracking started,
+        // and where we are now
+        float currentNormDelta = normX - self.playerPreviewButtonTrackingNormXStart;
+        
+        // turn that norm delta into a delta in radians, based upon WHATEVER is our
+        // current HFOV (regardless as to whether we are in portrait or landscape)
+        float currentRadDelta = self.metalView.currentHFOVRadians * currentNormDelta;
+        
+        // using the value of what the 'customHeadingOffsetRadians' was at the start of this
+        // tracking operation, tack on the additional delta that is presently under consideration
+        self.metalView.customHeadingOffsetRadians = self.playerPreviewButtonTrackingCustomHeadingOffsetRadiansStart + currentRadDelta;
     }
 }
 
 -(void)playerPreviewButtonEndTrackingDidOccurAtNormX:(CGFloat)normX {
-    NSLog(@"PlayerPreviewEnd:%0.3f", normX);
+    //NSLog(@"PlayerPreviewEnd:%0.3f", normX);
 }
 
 @end

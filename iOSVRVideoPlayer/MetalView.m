@@ -21,6 +21,7 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
         _pixelBuffer = nil;
         _isPlaying = NO;
         _landscapeOrientationHFOVRadians = 60.0 * DegToRad;
+        _customHeadingOffsetRadians = 0.0f;
         
         // init metal related props
         // ******************************
@@ -205,7 +206,7 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
             HFOV = self.portraitOrientationHFOVRadians;
             
             // no offset for Z when in portrait
-            offsetZ = 0;
+            offsetZ = 0 + self.customHeadingOffsetRadians;
             
             // pull the quaternion from CoreMotion
             // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
@@ -223,7 +224,7 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
             HFOV = self.landscapeOrientationHFOVRadians;
             
             // needs custom offsetZ that is unique to LandscapeRight
-            offsetZ = -PIOver2;
+            offsetZ = -PIOver2 + self.customHeadingOffsetRadians;
             
             // pull the quaternion from CoreMotion
             // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
@@ -241,7 +242,7 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
             HFOV = self.landscapeOrientationHFOVRadians;
             
             // needs custom offsetZ that is unique to LandscapeLeft
-            offsetZ = PIOver2;
+            offsetZ = PIOver2 + self.customHeadingOffsetRadians;
             
             // pull the quaternion from CoreMotion
             // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
@@ -361,6 +362,28 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
             //  - dstHeight here is the width of the portrait-oriented dst img
             //  - dstWidth here is the width of the landscape-oriented dst img
             HFOV = 2.0 * atan2((0.5 * dstHeight), ((0.5 * dstWidth) / tan(0.5 * self.landscapeOrientationHFOVRadians)));
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+    
+    return HFOV;
+}
+
+-(float)currentHFOVRadians {
+    // returns landscape HFOV if in landscape mode
+    // return portrait HFOV if in portrait mode
+    float HFOV = self.landscapeOrientationHFOVRadians;
+    
+    switch(self.orientation)
+    {
+        case UIInterfaceOrientationPortrait:
+        case UIInterfaceOrientationPortraitUpsideDown:
+        {
+            HFOV = self.portraitOrientationHFOVRadians;
             break;
         }
         default:

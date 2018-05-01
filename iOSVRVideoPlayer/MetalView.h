@@ -29,6 +29,7 @@ extern const float landscapeOrientationHFOVRadiansMax;
 @property (nonatomic) CFTimeInterval inputTime;
 
 @property (nonatomic) float landscapeOrientationHFOVRadians;
+@property (nonatomic) float customHeadingOffsetRadians;
 @property (nonatomic) UIInterfaceOrientation orientation;
 @property (nonatomic) CMQuaternion quaternion;
 @property (nonatomic) BOOL isPlaying;
@@ -42,5 +43,6 @@ extern const float landscapeOrientationHFOVRadiansMax;
 -(MTLSize)threadGroups;
 
 -(float)portraitOrientationHFOVRadians;
+-(float)currentHFOVRadians;
 
 @end

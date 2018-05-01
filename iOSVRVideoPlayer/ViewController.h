@@ -30,6 +30,7 @@ typedef enum PlayerStateTypes { PlayerState_Playing = 0, PlayerState_Stopped } P
 @property (nonatomic) PlayerState playerState;
 @property (nonatomic) BOOL viewControllerHasMadeFirstAppearance;
 @property (nonatomic) CGFloat playerPreviewButtonTrackingNormXStart;
+@property (nonatomic) CGFloat playerPreviewButtonTrackingCustomHeadingOffsetRadiansStart;
 @property (nonatomic) BOOL playerPreviewButtonTrackingSuppressButtonBehavior;
 @property (nonatomic) BOOL playerPreviewButtonTrackingHijackedByButtonBehavior;
 
