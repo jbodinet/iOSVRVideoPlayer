@@ -74,9 +74,6 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
         // ***************************************************
         self.motionManager = [[CMMotionManager alloc] init];
         self.motionManager.deviceMotionUpdateInterval = 1.0 / 30.0f;
-//        [self.motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
-//            [self processMotion:motion];
-//        }];
         [self.motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryZVertical toQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
             [self processMotion:motion];
         }];

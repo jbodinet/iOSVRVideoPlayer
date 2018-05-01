@@ -55,12 +55,6 @@ static NSString * const fovPrefs = @"FOVPrefs";
     {
         // Player
         self.player = [[AVPlayer alloc] init];
-//        self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
-//        self.playerLayer.frame = self.metalView.bounds;
-//        self.playerLayer.videoGravity = AVLayerVideoGravityResizeAspect;
-        
-//        [self.playerPreview.layer insertSublayer:self.playerLayer atIndex:0];
-//        [self.playerPreview layoutIfNeeded];
         
         // Display Link
         self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayLinkReadBuffer:)];
