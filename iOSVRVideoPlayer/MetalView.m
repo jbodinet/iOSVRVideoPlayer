@@ -177,16 +177,27 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
     
     float halfDstWidth = dstWidth * 0.5;
     
-    // set up the only necessary offset, which is pitch rotation is about the Y axis
-    // --------------------------------------------------------------------
+    // set up the necessary offsets, which are about the Y axis and about the Z axis
+    // ------------------------------------------------------------------------------
     const float offsetY = PIOver2;
-    float offsetYQuaternion [4];
+    float offsetZ = 0;
+    float offsetYQuaternion [4], offsetZQuaternion [4];
+    
+    // load offsetY into offsetYQuaternion
+    // -------------------------------------
     rotationAxis[CiX] = 0.0;
     rotationAxis[CiY] = 1.0;
     rotationAxis[CiZ] = 0.0;
     rotationAxis[CiW] = 1.0;
     
     quaternionInitialize(offsetYQuaternion, rotationAxis, offsetY);
+    
+    // set up for offsetZ
+    // -------------------------------------
+    rotationAxis[CiX] = 0.0;
+    rotationAxis[CiY] = 0.0;
+    rotationAxis[CiZ] = 1.0;
+    rotationAxis[CiW] = 1.0;
     
     switch(self.orientation)
     {
@@ -198,6 +209,9 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
             //  - dstWidth here is the width of the portrait-oriented dst img
             //  - dstHeight here is the width of the landscape-oriented dst img
             HFOV = 2.0 * atan2((0.5 * dstWidth), ((0.5 * dstHeight) / tan(0.5 * self.landscapeOrientationHFOVRadians)));
+            
+            // no offset for Z when in portrait
+            offsetZ = 0;
             
             // pull the quaternion from CoreMotion
             // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
@@ -214,6 +228,9 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
             // can use this as-is
             HFOV = self.landscapeOrientationHFOVRadians;
             
+            // needs custom offsetZ that is unique to LandscapeRight
+            offsetZ = -PIOver2;
+            
             // pull the quaternion from CoreMotion
             // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
             // --------------------------------------------------------------------
@@ -228,6 +245,9 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
         {
             // can use this as-is
             HFOV = self.landscapeOrientationHFOVRadians;
+            
+            // needs custom offsetZ that is unique to LandscapeLeft
+            offsetZ = PIOver2;
             
             // pull the quaternion from CoreMotion
             // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
@@ -245,9 +265,11 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
         }
     }
     
-    // Apply the offset to the quaternion we received from CoreMotion
-    // and then turn the whole think into a rotation matrix
+    // Create and apply the quaternions up to the point of having
+    // the complete rotation matrix
     // --------------------------------------------------------------------
+    quaternionInitialize(offsetZQuaternion, rotationAxis, offsetZ);
+    quaternionMultiply(offsetZQuaternion, offsetYQuaternion);
     quaternionMultiply(offsetYQuaternion, finalQuaternion);
     quaternionToMatrix(finalQuaternion, metalParam.rotationMatrix);
     
