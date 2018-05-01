@@ -179,14 +179,14 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
     
     // set up the only necessary offset, which is pitch rotation is about the Y axis
     // --------------------------------------------------------------------
-    const float offset = PIOver2;
-    float offsetQuaternion [4];
+    const float offsetY = PIOver2;
+    float offsetYQuaternion [4];
     rotationAxis[CiX] = 0.0;
     rotationAxis[CiY] = 1.0;
     rotationAxis[CiZ] = 0.0;
     rotationAxis[CiW] = 1.0;
     
-    quaternionInitialize(offsetQuaternion, rotationAxis, offset);
+    quaternionInitialize(offsetYQuaternion, rotationAxis, offsetY);
     
     switch(self.orientation)
     {
@@ -248,7 +248,7 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
     // Apply the offset to the quaternion we received from CoreMotion
     // and then turn the whole think into a rotation matrix
     // --------------------------------------------------------------------
-    quaternionMultiply(offsetQuaternion, finalQuaternion);
+    quaternionMultiply(offsetYQuaternion, finalQuaternion);
     quaternionToMatrix(finalQuaternion, metalParam.rotationMatrix);
     
     // the HFOV and VFOV of the viewing volume used to generate
