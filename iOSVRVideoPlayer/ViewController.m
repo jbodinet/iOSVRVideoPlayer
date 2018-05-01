@@ -11,7 +11,7 @@
 #import "FileUtilities.h"
 
 static NSString * const fovPrefs = @"FOVPrefs";
-const float playerPreviewButtonLongPressSuppressionNormXThreshold = 0.05;
+const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
 
 @interface ViewController ()
 
@@ -320,8 +320,8 @@ const float playerPreviewButtonLongPressSuppressionNormXThreshold = 0.05;
         //NSLog(@"PlayerPreviewContinue:%0.3f", normX);
         
         // if we surpass the threshold necessary to start considering this a valid adjustment to custom heading offset
-        if(!((normX < (self.playerPreviewButtonTrackingNormXStart + playerPreviewButtonLongPressSuppressionNormXThreshold)) &&
-             (normX > (self.playerPreviewButtonTrackingNormXStart - playerPreviewButtonLongPressSuppressionNormXThreshold))))
+        if(!((normX < (self.playerPreviewButtonTrackingNormXStart + playerPreviewButtonSuppressionNormXThreshold)) &&
+             (normX > (self.playerPreviewButtonTrackingNormXStart - playerPreviewButtonSuppressionNormXThreshold))))
         {
             self.playerPreviewButtonTrackingSuppressButtonBehavior = YES;
         }
