@@ -175,6 +175,13 @@ static NSString * const fovPrefs = @"FOVPrefs";
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     
     [picker dismissViewControllerAnimated:YES completion:nil];
+    
+    // as the long press is what popped the image picker, the long press
+    // also caused the existing movie to pause. Hence, when we are returning
+    // from picker via a cancel, we want to start the movie playing again
+    self.playerState = PlayerState_Playing;
+    self.metalView.isPlaying = YES;
+    [self.player play];
 }
 
 #pragma mark - Player Utils
