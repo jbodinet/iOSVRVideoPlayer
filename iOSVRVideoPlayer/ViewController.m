@@ -73,8 +73,9 @@ const float playerPreviewButtonLongPressSuppressionNormXThreshold = 0.05;
         // register for a notification that that the player has stopped playing because it played until the end
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playerDidFinishPlaying:) name:AVPlayerItemDidPlayToEndTimeNotification object:self.player.currentItem];
         
-        // capture the orientation
-        self.metalView.orientation = [[UIApplication sharedApplication] statusBarOrientation];
+        // update the orientation to ensure
+        // we start correctly
+        [self updatePreviewOrientation];
         
         // try to load the existing movie, and if that doesn't exist, pop up the picker
         AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
