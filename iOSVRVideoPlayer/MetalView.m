@@ -201,11 +201,8 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
         case UIInterfaceOrientationPortrait:
         case UIInterfaceOrientationPortraitUpsideDown:
         {
-            // must derive HFOV from landscapeFOV and widths and heights.
-            // NOTE:
-            //  - dstWidth here is the width of the portrait-oriented dst img
-            //  - dstHeight here is the width of the landscape-oriented dst img
-            HFOV = 2.0 * atan2((0.5 * dstWidth), ((0.5 * dstHeight) / tan(0.5 * self.landscapeOrientationHFOVRadians)));
+            // must use the portraitOrientationHFOVRadians value here!!!
+            HFOV = self.portraitOrientationHFOVRadians;
             
             // no offset for Z when in portrait
             offsetZ = 0;
@@ -222,7 +219,7 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
         }
         case UIInterfaceOrientationLandscapeRight:
         {
-            // can use this as-is
+            // can use landscapeOrientationHFOVRadians as-is
             HFOV = self.landscapeOrientationHFOVRadians;
             
             // needs custom offsetZ that is unique to LandscapeRight
@@ -240,7 +237,7 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
         }
         case UIInterfaceOrientationLandscapeLeft:
         {
-            // can use this as-is
+            // can use landscapeOrientationHFOVRadians as-is
             HFOV = self.landscapeOrientationHFOVRadians;
             
             // needs custom offsetZ that is unique to LandscapeLeft
@@ -339,6 +336,40 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
 -(MTLSize)threadGroups {
     MTLSize groupCount = [self threadsPerGroup];
     return MTLSizeMake((((NSUInteger)self.bounds.size.width) / groupCount.width), (((NSUInteger)self.bounds.size.height) / groupCount.height), 1);
+}
+
+-(float)portraitOrientationHFOVRadians {
+    // must derive HFOV from landscapeFOV and widths and heights.
+    // ----------------------------------------------------------
+    float HFOV = 0;
+    float dstWidth = self.drawableSize.width;
+    float dstHeight = self.drawableSize.height;
+    
+    switch(self.orientation)
+    {
+        case UIInterfaceOrientationPortrait:
+        case UIInterfaceOrientationPortraitUpsideDown:
+        {
+            //  - dstWidth here is the width of the portrait-oriented dst img
+            //  - dstHeight here is the width of the landscape-oriented dst img
+            HFOV = 2.0 * atan2((0.5 * dstWidth), ((0.5 * dstHeight) / tan(0.5 * self.landscapeOrientationHFOVRadians)));
+            break;
+        }
+        case UIInterfaceOrientationLandscapeRight:
+        case UIInterfaceOrientationLandscapeLeft:
+        {
+            //  - dstHeight here is the width of the portrait-oriented dst img
+            //  - dstWidth here is the width of the landscape-oriented dst img
+            HFOV = 2.0 * atan2((0.5 * dstHeight), ((0.5 * dstWidth) / tan(0.5 * self.landscapeOrientationHFOVRadians)));
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+    
+    return HFOV;
 }
 
 @end

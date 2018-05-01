@@ -41,4 +41,6 @@ extern const float landscapeOrientationHFOVRadiansMax;
 -(MTLSize)threadsPerGroup;
 -(MTLSize)threadGroups;
 
+-(float)portraitOrientationHFOVRadians;
+
 @end
