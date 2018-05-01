@@ -33,7 +33,9 @@ static NSString * const fovPrefs = @"FOVPrefs";
     
     if([userDefaults objectForKey:fovPrefs])
     {
+        self.metalView.isPlaying = YES;
         self.metalView.landscapeOrientationHFOVRadians = [userDefaults floatForKey:fovPrefs];
+        self.metalView.isPlaying = NO;
     }
     
     self.viewControllerHasMadeFirstAppearance = NO;
@@ -150,11 +152,6 @@ static NSString * const fovPrefs = @"FOVPrefs";
         newFOV = landscapeOrientationHFOVRadiansMax;
     
     self.metalView.landscapeOrientationHFOVRadians = newFOV;
-    
-    if(PlayerState_Stopped == self.playerState)
-    {
-        [self.metalView setNeedsDisplay];
-    }
     
     // setting the pinch gesture recognizer back to 1.0
     // at the end of this call will dramatically slow down

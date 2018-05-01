@@ -20,7 +20,7 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
     {
         _pixelBuffer = nil;
         _isPlaying = NO;
-        self.landscapeOrientationHFOVRadians = 60.0 * DegToRad;
+        _landscapeOrientationHFOVRadians = 60.0 * DegToRad;
         
         // init metal related props
         // ******************************
@@ -91,6 +91,15 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
     _pixelBuffer = nil;
     _pixelBuffer = pixelBuffer;
     [self setNeedsDisplay];
+}
+
+-(void) setLandscapeOrientationHFOVRadians:(float)landscapeOrientationHFOVRadians {
+    _landscapeOrientationHFOVRadians = landscapeOrientationHFOVRadians;
+    
+    if(_isPlaying == NO)
+    {
+        [self setNeedsDisplay];
+    }
 }
 
 -(void)drawRect:(CGRect)rect {
