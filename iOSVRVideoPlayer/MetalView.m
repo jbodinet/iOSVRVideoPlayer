@@ -309,7 +309,6 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
     if(_isPlaying == NO)
     {
         [self setNeedsDisplay];
-        
     }
 }
 
