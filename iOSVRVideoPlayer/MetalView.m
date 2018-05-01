@@ -179,8 +179,8 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
     
     // set up the necessary offsets, which are about the Y axis and about the Z axis
     // ------------------------------------------------------------------------------
-    const float offsetY = PIOver2;
-    float offsetZ = 0;
+    const float offsetY = PIOver2; // can be constant, which fixes gymbol issue as iPhone is in a neutral position when laying on a table
+    float offsetZ = 0; // is a different value for different orientations, so that image sphere remains pinned over orientation switching
     float offsetYQuaternion [4], offsetZQuaternion [4];
     
     // load offsetY into offsetYQuaternion
@@ -265,8 +265,9 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
         }
     }
     
-    // Create and apply the quaternions up to the point of having
-    // the complete rotation matrix
+    // Create offsetZQuaternion, and then apply the Y and Z quaternions up to
+    // the point of having a finalQuaternion, which is then used to the
+    // create the rotation matrix
     // --------------------------------------------------------------------
     quaternionInitialize(offsetZQuaternion, rotationAxis, offsetZ);
     quaternionMultiply(offsetZQuaternion, offsetYQuaternion);
