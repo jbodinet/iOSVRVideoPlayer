@@ -29,6 +29,9 @@ typedef enum PlayerStateTypes { PlayerState_Playing = 0, PlayerState_Stopped } P
 
 @property (nonatomic) PlayerState playerState;
 @property (nonatomic) BOOL viewControllerHasMadeFirstAppearance;
+@property (nonatomic) CGFloat playerPreviewButtonTrackingNormXStart;
+@property (nonatomic) BOOL playerPreviewButtonTrackingSuppressButtonBehavior;
+@property (nonatomic) BOOL playerPreviewButtonTrackingHijackedByButtonBehavior;
 
 - (IBAction)hitPlayerPreviewButton:(UIButton *)sender;
 - (void)hitPlayerPreviewButtonLongPress:(UILongPressGestureRecognizer*)gesture;

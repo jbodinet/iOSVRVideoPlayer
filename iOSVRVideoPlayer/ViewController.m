@@ -11,6 +11,7 @@
 #import "FileUtilities.h"
 
 static NSString * const fovPrefs = @"FOVPrefs";
+const float playerPreviewButtonLongPressSuppressionNormXThreshold = 0.05;
 
 @interface ViewController ()
 
@@ -45,7 +46,10 @@ static NSString * const fovPrefs = @"FOVPrefs";
     self.viewControllerHasMadeFirstAppearance = NO;
     self.playerState = PlayerState_Stopped;
     self.metalView.isPlaying = NO;
-    
+    self.playerPreviewButtonTrackingNormXStart = 0.0f;
+    self.playerPreviewButtonTrackingSuppressButtonBehavior = NO;
+    self.playerPreviewButtonTrackingHijackedByButtonBehavior = NO;
+
     // add a long press gesture recognizer to player preview button
     [self.playerPreviewButton addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(hitPlayerPreviewButtonLongPress:)]];
     
@@ -108,6 +112,14 @@ static NSString * const fovPrefs = @"FOVPrefs";
 - (IBAction)hitPlayerPreviewButton:(UIButton *)sender {
     //NSLog(@"PlayerPreviewButton HIT!!!");
     
+    // if playerPreviewButtonTracking is suppressing all other
+    // button behavior, ditch out w/o doing anything
+    // --------------------------------------------------------
+    if(self.playerPreviewButtonTrackingSuppressButtonBehavior)
+        return;
+    
+    // Handle the button message
+    // --------------------------------------------------------
     switch(self.playerState)
     {
         case PlayerState_Stopped:
@@ -126,7 +138,20 @@ static NSString * const fovPrefs = @"FOVPrefs";
 
 - (void)hitPlayerPreviewButtonLongPress:(UILongPressGestureRecognizer*)gesture {
     //NSLog(@"PlayerPreviewButton LONG PRESS!!!");
-        
+    
+    // if playerPreviewButtonTracking is suppressing all other
+    // button behavior, ditch out w/o doing anything
+    // --------------------------------------------------------
+    if(self.playerPreviewButtonTrackingSuppressButtonBehavior)
+        return;
+    
+    // However, if this long press snuck in first, then we are
+    // hijacking the tracking
+    // --------------------------------------------------------
+    self.playerPreviewButtonTrackingHijackedByButtonBehavior = YES;
+    
+    // handle the long press
+    // --------------------------------------------------------
     if ( gesture.state == UIGestureRecognizerStateBegan )
     {
         AudioServicesPlaySystemSound(1520); // vibrate
@@ -141,6 +166,17 @@ static NSString * const fovPrefs = @"FOVPrefs";
 
 - (void)playerPreviewButtonPinch:(UIPinchGestureRecognizer *)sender {
     //NSLog(@"PlayerPreviewButton PINCH PRESS Scale:%0.2f", sender.scale);
+    
+    // if playerPreviewButtonTracking is suppressing all other
+    // button behavior, ditch out w/o doing anything
+    // --------------------------------------------------------
+    if(self.playerPreviewButtonTrackingSuppressButtonBehavior)
+        return;
+    
+    // However, if this long press snuck in first, then we are
+    // hijacking the tracking
+    // --------------------------------------------------------
+    self.playerPreviewButtonTrackingHijackedByButtonBehavior = YES;
     
     float newFOV = self.metalView.landscapeOrientationHFOVRadians / sender.scale;
     
@@ -276,10 +312,33 @@ static NSString * const fovPrefs = @"FOVPrefs";
 #pragma mark - PlayerPreviewButtonTouchTrackingDelegate
 -(void)playerPreviewButtonBeginTrackingDidOccurAtNormX:(CGFloat)normX {
     NSLog(@"PlayerPreviewBegin:%0.3f", normX);
+    
+    self.playerPreviewButtonTrackingNormXStart = normX;
+    self.playerPreviewButtonTrackingSuppressButtonBehavior = NO;
+    self.playerPreviewButtonTrackingHijackedByButtonBehavior = NO;
 }
 
 -(void)playerPreviewButtonContinueTrackingDidOccurAtNormX:(CGFloat)normX {
-    NSLog(@"PlayerPreviewContinue:%0.3f", normX);
+    // always track this
+    // ---------------------------------------------------------
+    
+    
+    // however only act on the information IF it is NOT
+    // the case that tracking has been hijacked by other
+    // button behavior
+    // ---------------------------------------------------------
+    if(!self.playerPreviewButtonTrackingHijackedByButtonBehavior)
+    {
+        NSLog(@"PlayerPreviewContinue:%0.3f", normX);
+        
+        if(!((normX < (self.playerPreviewButtonTrackingNormXStart + playerPreviewButtonLongPressSuppressionNormXThreshold)) &&
+             (normX > (self.playerPreviewButtonTrackingNormXStart - playerPreviewButtonLongPressSuppressionNormXThreshold))))
+        {
+            self.playerPreviewButtonTrackingSuppressButtonBehavior = YES;
+        }
+        
+   
+    }
 }
 
 -(void)playerPreviewButtonEndTrackingDidOccurAtNormX:(CGFloat)normX {
