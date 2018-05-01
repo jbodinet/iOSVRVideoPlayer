@@ -286,23 +286,6 @@ const float playerPreviewButtonLongPressSuppressionNormXThreshold = 0.05;
     }
 }
 
--(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
-    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        //NSLog(@"orientation changed animations occur here!!!");
-        
-        [self updatePreviewOrientation];
-        
-    } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        //NSLog(@"orientation changed animations completed here!!!");
-    }];
-    
-    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-}
-
--(BOOL)prefersStatusBarHidden {
-    return YES;
-}
-
 #pragma mark - AppDelegateTerminationDelegate
 -(void)appWillTerminate {
     // store prefs
@@ -365,6 +348,24 @@ const float playerPreviewButtonLongPressSuppressionNormXThreshold = 0.05;
 
 -(void)playerPreviewButtonEndTrackingDidOccurAtNormX:(CGFloat)normX {
     //NSLog(@"PlayerPreviewEnd:%0.3f", normX);
+}
+
+#pragma mark - Standard UIView Overrides
+-(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        //NSLog(@"orientation changed animations occur here!!!");
+        
+        [self updatePreviewOrientation];
+        
+    } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
+        //NSLog(@"orientation changed animations completed here!!!");
+    }];
+    
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+}
+
+-(BOOL)prefersStatusBarHidden {
+    return YES;
 }
 
 @end

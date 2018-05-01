@@ -205,11 +205,16 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
             // must use the portraitOrientationHFOVRadians value here!!!
             HFOV = self.portraitOrientationHFOVRadians;
             
-            // no offset for Z when in portrait
+            // no basic offset for Z when in portrait, however
+            // there is the custom offset
             offsetZ = 0 + self.customHeadingOffsetRadians;
             
             // pull the quaternion from CoreMotion
-            // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
+            // NOTE: these values are tweaked/shuffled so as to counteract the
+            //       tension created by holding the device in the desired
+            //       neutral orientation as compared to the true neutral
+            //       orientation (which is the device laying down on a table
+            //       w/ the back side of the device facing downward)
             // --------------------------------------------------------------------
             finalQuaternion[QiW] = self.quaternion.w;
             finalQuaternion[QiX] = -self.quaternion.z;
@@ -227,7 +232,11 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
             offsetZ = -PIOver2 + self.customHeadingOffsetRadians;
             
             // pull the quaternion from CoreMotion
-            // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
+            // NOTE: these values are tweaked/shuffled so as to counteract the
+            //       tension created by holding the device in the desired
+            //       neutral orientation as compared to the true neutral
+            //       orientation (which is the device laying down on a table
+            //       w/ the back side of the device facing downward)
             // --------------------------------------------------------------------
             finalQuaternion[QiW] = self.quaternion.w;
             finalQuaternion[QiX] = -self.quaternion.z;
@@ -245,7 +254,11 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
             offsetZ = PIOver2 + self.customHeadingOffsetRadians;
             
             // pull the quaternion from CoreMotion
-            // *** WHY DO WE HAVE TO TWEAK THE VALUES AS WE DO???
+            // NOTE: these values are tweaked/shuffled so as to counteract the
+            //       tension created by holding the device in the desired
+            //       neutral orientation as compared to the true neutral
+            //       orientation (which is the device laying down on a table
+            //       w/ the back side of the device facing downward)
             // --------------------------------------------------------------------
             finalQuaternion[QiW] = self.quaternion.w;
             finalQuaternion[QiX] = -self.quaternion.z;
@@ -374,8 +387,8 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
 }
 
 -(float)currentHFOVRadians {
-    // returns landscape HFOV if in landscape mode
-    // return portrait HFOV if in portrait mode
+    // returns landscape HFOV if in landscape mode,
+    // returns portrait HFOV if in portrait mode
     float HFOV = self.landscapeOrientationHFOVRadians;
     
     switch(self.orientation)

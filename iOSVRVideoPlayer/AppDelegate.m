@@ -79,7 +79,7 @@
     // walk the enumerator, return URL of first movie file
     for (NSURL *theURL in dirEnumerator)
     {
-        // if url is for an .mp4 file, delete the file
+        // if url is for an .mp4 file, return the URL
         NSString *extension = [theURL pathExtension];
         if([[extension lowercaseString] isEqualToString:@"mp4"] ||
            [[extension lowercaseString] isEqualToString:@"mov"])
