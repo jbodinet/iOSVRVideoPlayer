@@ -38,6 +38,7 @@ static NSString * const fovPrefs = @"FOVPrefs";
     
     self.viewControllerHasMadeFirstAppearance = NO;
     self.playerState = PlayerState_Stopped;
+    self.metalView.isPlaying = NO;
     
     // add a long press gesture recognizer to player preview button
     [self.playerPreviewButton addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(hitPlayerPreviewButtonLongPress:)]];
@@ -111,11 +112,14 @@ static NSString * const fovPrefs = @"FOVPrefs";
     {
         case PlayerState_Stopped:
             self.playerState = PlayerState_Playing;
+            self.metalView.isPlaying = YES;
             [self.player play];
             break;
         case PlayerState_Playing:
             self.playerState = PlayerState_Stopped;
+            self.metalView.isPlaying = NO;
             [self.player pause];
+            
             break;
     }
 }
@@ -128,6 +132,7 @@ static NSString * const fovPrefs = @"FOVPrefs";
         AudioServicesPlaySystemSound(1520); // vibrate
         
         self.playerState = PlayerState_Stopped;
+        self.metalView.isPlaying = NO;
         [self.player pause];
         
         [self pickMovie];
@@ -145,6 +150,11 @@ static NSString * const fovPrefs = @"FOVPrefs";
         newFOV = landscapeOrientationHFOVRadiansMax;
     
     self.metalView.landscapeOrientationHFOVRadians = newFOV;
+    
+    if(PlayerState_Stopped == self.playerState)
+    {
+        [self.metalView setNeedsDisplay];
+    }
     
     // setting the pinch gesture recognizer back to 1.0
     // at the end of this call will dramatically slow down
@@ -205,12 +215,14 @@ static NSString * const fovPrefs = @"FOVPrefs";
     //        }
     
     self.playerState = PlayerState_Playing;
+    self.metalView.isPlaying = YES;
     [self.player play];
 }
 
 -(void) playerDidFinishPlaying:(NSNotification*)notification {
     [self.player seekToTime:kCMTimeZero toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero completionHandler:^(BOOL finished) {
         self.playerState = PlayerState_Playing;
+        self.metalView.isPlaying = YES;
         [self.player play];
     }];
 }

@@ -31,6 +31,7 @@ extern const float landscapeOrientationHFOVRadiansMax;
 @property (nonatomic) float landscapeOrientationHFOVRadians;
 @property (nonatomic) UIInterfaceOrientation orientation;
 @property (nonatomic) CMQuaternion quaternion;
+@property (nonatomic) BOOL isPlaying;
 
 
 -(void)render:(MTKView*)view;

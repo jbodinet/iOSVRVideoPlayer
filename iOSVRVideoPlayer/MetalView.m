@@ -19,6 +19,7 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
     if(self)
     {
         _pixelBuffer = nil;
+        _isPlaying = NO;
         self.landscapeOrientationHFOVRadians = 60.0 * DegToRad;
         
         // init metal related props
@@ -72,7 +73,7 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
         // register for motion
         // ***************************************************
         self.motionManager = [[CMMotionManager alloc] init];
-        self.motionManager.deviceMotionUpdateInterval = 0.01f;
+        self.motionManager.deviceMotionUpdateInterval = 1.0 / 30.0f;
 //        [self.motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *motion, NSError *error) {
 //            [self processMotion:motion];
 //        }];
@@ -125,10 +126,6 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
         NSLog(@"render: called without drawable!!!");
         return;
     }
-    
-    if(_pixelBuffer)
-        CVBufferRelease(_pixelBuffer);
-    _pixelBuffer = nil;
     
     // create a command buffer
     id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
@@ -299,6 +296,12 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
     //NSLog(@"QW: %0.2f QX: %0.2f QY: %0.2f QZ: %0.2f", motion.attitude.quaternion.w, motion.attitude.quaternion.x, motion.attitude.quaternion.y, motion.attitude.quaternion.z);
 
     self.quaternion = motion.attitude.quaternion;
+    
+    if(_isPlaying == NO)
+    {
+        [self setNeedsDisplay];
+        
+    }
 }
 
 -(MTLSize)threadsPerGroup {
