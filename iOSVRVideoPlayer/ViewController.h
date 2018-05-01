@@ -12,13 +12,14 @@
 
 #import "AppDelegate.h"
 #import "MetalView.h"
+#import "PlayerPreviewButton.h"
 
 typedef enum PlayerStateTypes { PlayerState_Playing = 0, PlayerState_Stopped } PlayerState;
 
 @interface ViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, AppDelegateTerminationDelegate>
 
 @property (strong, nonatomic) IBOutlet MetalView *metalView;
-@property (strong, nonatomic) IBOutlet UIButton *playerPreviewButton;
+@property (strong, nonatomic) IBOutlet PlayerPreviewButton *playerPreviewButton;
 @property (strong, nonatomic) AVPlayer *player;
 @property (strong, nonatomic) AVPlayerLayer *playerLayer;
 @property (strong, nonatomic) AVPlayerItem *playerItem;

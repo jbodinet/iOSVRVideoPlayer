@@ -18,6 +18,7 @@
 		039290DF2097CC41006466BE /* MetalKernelWindowFromEquirectOptimized.metal in Sources */ = {isa = PBXBuildFile; fileRef = 039290D92097CC40006466BE /* MetalKernelWindowFromEquirectOptimized.metal */; };
 		039290E02097CC41006466BE /* SphericalMath.c in Sources */ = {isa = PBXBuildFile; fileRef = 039290DB2097CC41006466BE /* SphericalMath.c */; };
 		039290E12097CC41006466BE /* MetalParamWindowFromEquirectOptimized.c in Sources */ = {isa = PBXBuildFile; fileRef = 039290DD2097CC41006466BE /* MetalParamWindowFromEquirectOptimized.c */; };
+		03CF80942098CF73003472C7 /* PlayerPreviewButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 03CF80932098CF73003472C7 /* PlayerPreviewButton.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,8 @@
 		039290DB2097CC41006466BE /* SphericalMath.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SphericalMath.c; sourceTree = "<group>"; };
 		039290DC2097CC41006466BE /* MetalView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetalView.h; sourceTree = "<group>"; };
 		039290DD2097CC41006466BE /* MetalParamWindowFromEquirectOptimized.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MetalParamWindowFromEquirectOptimized.c; sourceTree = "<group>"; };
+		03CF80922098CF73003472C7 /* PlayerPreviewButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerPreviewButton.h; sourceTree = "<group>"; };
+		03CF80932098CF73003472C7 /* PlayerPreviewButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayerPreviewButton.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +89,8 @@
 				039290DA2097CC41006466BE /* MetalParamWindowFromEquirectOptimized.h */,
 				039290DC2097CC41006466BE /* MetalView.h */,
 				039290D72097CC32006466BE /* MetalView.m */,
+				03CF80922098CF73003472C7 /* PlayerPreviewButton.h */,
+				03CF80932098CF73003472C7 /* PlayerPreviewButton.m */,
 				039290DB2097CC41006466BE /* SphericalMath.c */,
 				039290D82097CC40006466BE /* SphericalMath.h */,
 				0324686C2093A558001C845A /* ViewController.h */,
@@ -170,6 +175,7 @@
 				039290DF2097CC41006466BE /* MetalKernelWindowFromEquirectOptimized.metal in Sources */,
 				032468812093B950001C845A /* FileUtilities.m in Sources */,
 				0324686B2093A558001C845A /* AppDelegate.m in Sources */,
+				03CF80942098CF73003472C7 /* PlayerPreviewButton.m in Sources */,
 				039290DE2097CC41006466BE /* MetalView.m in Sources */,
 				039290E12097CC41006466BE /* MetalParamWindowFromEquirectOptimized.c in Sources */,
 			);

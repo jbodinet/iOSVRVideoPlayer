@@ -102,7 +102,7 @@ static NSString * const fovPrefs = @"FOVPrefs";
 #pragma mark - Button Handlers
 
 - (IBAction)hitPlayerPreviewButton:(UIButton *)sender {
-    NSLog(@"PlayerPreviewButton HIT!!!");
+    //NSLog(@"PlayerPreviewButton HIT!!!");
     
     switch(self.playerState)
     {
@@ -121,7 +121,7 @@ static NSString * const fovPrefs = @"FOVPrefs";
 }
 
 - (void)hitPlayerPreviewButtonLongPress:(UILongPressGestureRecognizer*)gesture {
-    NSLog(@"PlayerPreviewButton LONG PRESS!!!");
+    //NSLog(@"PlayerPreviewButton LONG PRESS!!!");
     
     if ( gesture.state == UIGestureRecognizerStateBegan )
     {
@@ -136,7 +136,7 @@ static NSString * const fovPrefs = @"FOVPrefs";
 }
 
 - (void)playerPreviewButtonPinch:(UIPinchGestureRecognizer *)sender {
-    NSLog(@"PlayerPreviewButton PINCH PRESS Scale:%0.2f", sender.scale);
+    //NSLog(@"PlayerPreviewButton PINCH PRESS Scale:%0.2f", sender.scale);
     
     float newFOV = self.metalView.landscapeOrientationHFOVRadians / sender.scale;
     
@@ -246,12 +246,12 @@ static NSString * const fovPrefs = @"FOVPrefs";
 
 -(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        NSLog(@"orientation changed animations occur here!!!");
+        //NSLog(@"orientation changed animations occur here!!!");
         
         [self updatePreviewOrientation];
         
     } completion:^(id<UIViewControllerTransitionCoordinatorContext>  _Nonnull context) {
-        NSLog(@"orientation changed animations completed here!!!");
+        //NSLog(@"orientation changed animations completed here!!!");
     }];
     
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
