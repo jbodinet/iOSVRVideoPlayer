@@ -81,63 +81,6 @@ kernel void kernelFunctionEquirectangularToRectilinear(texture2d<float, access::
     
     return;
 }
-    
-kernel void kernelFunction2VUYtoRGB(texture2d<float, access::read> inTexture [[texture(0)]],
-                                    texture2d<float, access::write> outTexture [[texture(1)]],
-                                    uint2 gid [[thread_position_in_grid]],
-                                    constant MetalParam* params [[ buffer(0) ]])
-{
-    // YUY2 is Y1 Cb0 Y2 Cr0 | Y2 Cb2 Y3 Cr2 | ...
-    
-    // Note: inTexture is a grayscale / single channel texture. The ONLY member of inColor here that
-    //       has a non-zero value is element of index '0'
-    int slot = gid.x % 2;
-    int CrOffset, CbOffset;
-    if(slot == 0)
-    {
-        CbOffset = 1;
-        CrOffset = 3;
-    }
-    else
-    {
-        CbOffset = -1;
-        CrOffset = 1;
-    }
-    
-    float4 Y = inTexture.read(uint2(gid.x * 2, gid.y));
-    float4 Cr = inTexture.read(uint2((gid.x * 2) + CrOffset, gid.y));
-    float4 Cb = inTexture.read(uint2((gid.x * 2) + CbOffset, gid.y));
-    
-    float4 outColor;
-    outColor[2] = (1.164 * (Y[0] - (16 / 255.0)))                                     + (2.018 * (Cr[0] - (128 / 255.0)));
-    outColor[1] = (1.164 * (Y[0] - (16 / 255.0))) - (0.813 * (Cb[0] - (128 / 255.0))) - (0.391 * (Cr[0] - (128 / 255.0)));
-    outColor[0] = (1.164 * (Y[0] - (16 / 255.0))) + (1.596 * (Cb[0] - (128 / 255.0)));
-    outColor[3] = 255;
-    
-    if(outColor[0] < 0) outColor[0] = 0;
-    if(outColor[1] < 0) outColor[1] = 0;
-    if(outColor[2] < 0) outColor[2] = 0;
-    
-    if(outColor[0] > 1.0) outColor[0] = 1.0;
-    if(outColor[1] > 1.0) outColor[1] = 1.0;
-    if(outColor[2] > 1.0) outColor[2] = 1.0;
-    
-    outTexture.write(outColor, gid);
-    
-    return;
-}
-
-kernel void kernelFunctionBGRtoRGBSwizzle(texture2d<float, access::read> inTexture [[texture(0)]],
-                                          texture2d<float, access::write> outTexture [[texture(1)]],
-                                          uint2 gid [[thread_position_in_grid]],
-                                          constant MetalParam* params [[ buffer(0) ]])
-{
-    float4 inColor = inTexture.read(gid);
-    float temp = inColor[0];
-    inColor[0] = inColor[2];
-    inColor[2] = temp;
-    outTexture.write(inColor, gid);
-}
 
 float fixPolarRange(float value, float naturalPolarRange)
 {
