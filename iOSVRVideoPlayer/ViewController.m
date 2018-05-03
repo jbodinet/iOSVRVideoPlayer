@@ -366,10 +366,25 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
     // show drag instructions if we have not yet
     if(self.showDragInstructions)
     {
-        NSString *message = @"•Drag to reorient heading.\n•Double Tap, then drag to scrub";
+        // hold on to the original player state
+        __block PlayerState originalPlayerState = self.playerState;
+        
+        // stop playback
+        self.playerState = PlayerState_Stopped;
+        self.metalView.isPlaying = NO;
+        [self.player pause];
+        
+        // show message
+        NSString *message = @"•Drag to reorient heading\n•Double tap, then drag to scrub";
         UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Drag Instructions" message:message preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            
+            // if the original state was playing, recommence playback
+            if(originalPlayerState == PlayerState_Playing)
+            {
+                self.playerState = PlayerState_Playing;
+                self.metalView.isPlaying = YES;
+                [self.player play];
+            }
         }];
         [alert addAction:ok];
         [self presentViewController:alert animated:YES completion:nil];
