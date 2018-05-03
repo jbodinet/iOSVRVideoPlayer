@@ -395,7 +395,6 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
     // if we are presently scrubbing (which is a special case)
     if(self.scrubbing)
     {
-        // we ***always*** scrub no matter if we have reached a threshold or not
         [self.player seekToTime:CMTimeMake(self.player.currentItem.asset.duration.value * normX, self.player.currentItem.asset.duration.timescale) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
     }
     // otherwise we handle the default case
