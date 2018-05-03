@@ -33,9 +33,12 @@ typedef enum PlayerStateTypes { PlayerState_Playing = 0, PlayerState_Stopped } P
 @property (nonatomic) CGFloat playerPreviewButtonTrackingCustomHeadingOffsetRadiansStart;
 @property (nonatomic) BOOL playerPreviewButtonTrackingSuppressButtonBehavior;
 @property (nonatomic) BOOL playerPreviewButtonTrackingHijackedByButtonBehavior;
+@property (nonatomic) BOOL scrubbing;
+@property (nonatomic) BOOL showDragInstructions;
 
 - (IBAction)hitPlayerPreviewButton:(UIButton *)sender;
 - (void)hitPlayerPreviewButtonLongPress:(UILongPressGestureRecognizer*)gesture;
+- (void)hitPlayerPreviewButtonDoubleTap:(UITapGestureRecognizer*)gesture;
 - (void)playerPreviewButtonPinch:(UIPinchGestureRecognizer *)sender;
 
 -(void) pickMovie;

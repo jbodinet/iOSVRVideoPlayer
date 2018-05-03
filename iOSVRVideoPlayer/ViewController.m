@@ -11,6 +11,7 @@
 #import "FileUtilities.h"
 
 static NSString * const fovPrefs = @"FOVPrefs";
+static NSString * const showDragInstructionsPrefs = @"DragInstructionsPrefs";
 const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
 
 @interface ViewController ()
@@ -32,6 +33,18 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
     // -------------------------------------------------------------
     self.playerPreviewButton.delegate = self;
     
+    // set defaults
+    // -------------------------------------------------------------
+    self.viewControllerHasMadeFirstAppearance = NO;
+    self.playerState = PlayerState_Stopped;
+    self.metalView.isPlaying = NO;
+    self.playerPreviewButtonTrackingNormXStart = 0.0f;
+    self.playerPreviewButtonTrackingCustomHeadingOffsetRadiansStart = 0.0f;
+    self.playerPreviewButtonTrackingSuppressButtonBehavior = NO;
+    self.playerPreviewButtonTrackingHijackedByButtonBehavior = NO;
+    self.scrubbing = NO;
+    self.showDragInstructions = YES;
+    
     // load prefs
     // -------------------------------------------------------------
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
@@ -42,17 +55,19 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
         self.metalView.landscapeOrientationHFOVRadians = [userDefaults floatForKey:fovPrefs];
         self.metalView.isPlaying = NO;
     }
-    
-    self.viewControllerHasMadeFirstAppearance = NO;
-    self.playerState = PlayerState_Stopped;
-    self.metalView.isPlaying = NO;
-    self.playerPreviewButtonTrackingNormXStart = 0.0f;
-    self.playerPreviewButtonTrackingCustomHeadingOffsetRadiansStart = 0.0f;
-    self.playerPreviewButtonTrackingSuppressButtonBehavior = NO;
-    self.playerPreviewButtonTrackingHijackedByButtonBehavior = NO;
 
+    if([userDefaults objectForKey:showDragInstructionsPrefs])
+    {
+        self.showDragInstructions = [userDefaults boolForKey:showDragInstructionsPrefs];
+    }
+    
     // add a long press gesture recognizer to player preview button
     [self.playerPreviewButton addGestureRecognizer:[[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(hitPlayerPreviewButtonLongPress:)]];
+    
+    // add a double tap gesture recognizer to playerr preview button
+    UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hitPlayerPreviewButtonDoubleTap:)];
+    tapGestureRecognizer.numberOfTapsRequired = 2;
+    [self.playerPreviewButton addGestureRecognizer:tapGestureRecognizer];
     
     // add a pinch gesture recogniser to player preview button
     [self.playerPreviewButton addGestureRecognizer:[[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(playerPreviewButtonPinch:)]];
@@ -125,6 +140,10 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
     // --------------------------------------------------------
     self.playerPreviewButtonTrackingHijackedByButtonBehavior = YES;
     
+    // say we are not scrubbing
+    // --------------------------------------------------------
+    self.scrubbing = NO;
+    
     // Handle the button message
     // --------------------------------------------------------
     switch(self.playerState)
@@ -157,6 +176,10 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
     // --------------------------------------------------------
     self.playerPreviewButtonTrackingHijackedByButtonBehavior = YES;
     
+    // say we are not scrubbing
+    // --------------------------------------------------------
+    self.scrubbing = NO;
+    
     // handle the long press
     // --------------------------------------------------------
     if ( gesture.state == UIGestureRecognizerStateBegan )
@@ -169,6 +192,16 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
         
         [self pickMovie];
     }
+}
+
+- (void)hitPlayerPreviewButtonDoubleTap:(UITapGestureRecognizer*)gesture {
+    // stop the movie
+    self.playerState = PlayerState_Stopped;
+    self.metalView.isPlaying = NO;
+    [self.player pause];
+    
+    // say we are now scrubbing
+    self.scrubbing = YES;
 }
 
 - (void)playerPreviewButtonPinch:(UIPinchGestureRecognizer *)sender {
@@ -184,6 +217,10 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
     // hijacking the tracking
     // --------------------------------------------------------
     self.playerPreviewButtonTrackingHijackedByButtonBehavior = YES;
+    
+    // say we are not scrubbing
+    // --------------------------------------------------------
+    self.scrubbing = NO;
     
     // handle the pinch
     // --------------------------------------------------------
@@ -293,6 +330,7 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
     // -------------------------------------------------------------
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     [userDefaults setFloat:self.metalView.landscapeOrientationHFOVRadians forKey:fovPrefs];
+    [userDefaults setBool:self.showDragInstructions forKey:showDragInstructionsPrefs];
 }
 
 #pragma mark - PlayerPreviewButtonTouchTrackingDelegate
@@ -311,39 +349,63 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
 }
 
 -(void)playerPreviewButtonContinueTrackingDidOccurAtNormX:(CGFloat)normX {
-    // only act on the tracking information IF it is NOT
-    // the case that tracking has been hijacked by other
-    // button behavior
-    // ---------------------------------------------------------
-    if(!self.playerPreviewButtonTrackingHijackedByButtonBehavior)
+    // if we surpass the threshold necessary to start considering this a valid tracking move
+    if(!((normX < (self.playerPreviewButtonTrackingNormXStart + playerPreviewButtonSuppressionNormXThreshold)) &&
+         (normX > (self.playerPreviewButtonTrackingNormXStart - playerPreviewButtonSuppressionNormXThreshold))))
     {
-        //NSLog(@"PlayerPreviewContinue:%0.3f", normX);
+        self.playerPreviewButtonTrackingSuppressButtonBehavior = YES;
+    }
+    else
+    {
+        // until we reach the above tested threshold, we do nothing else
+        // in this entire function--and thus just 'return' here...
+        if(!self.playerPreviewButtonTrackingSuppressButtonBehavior)
+            return;
+    }
+    
+    // show drag instructions if we have not yet
+    if(self.showDragInstructions)
+    {
+        NSString *message = @"•Drag to reorient heading.\n•Double Tap, then drag to scrub";
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Drag Instructions" message:message preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            
+        }];
+        [alert addAction:ok];
+        [self presentViewController:alert animated:YES completion:nil];
         
-        // if we surpass the threshold necessary to start considering this a valid adjustment to custom heading offset
-        if(!((normX < (self.playerPreviewButtonTrackingNormXStart + playerPreviewButtonSuppressionNormXThreshold)) &&
-             (normX > (self.playerPreviewButtonTrackingNormXStart - playerPreviewButtonSuppressionNormXThreshold))))
+        self.showDragInstructions = NO;
+    }
+    
+    // if we are presently scrubbing (which is a special case)
+    if(self.scrubbing)
+    {
+        // we ***always*** scrub no matter if we have reached a threshold or not
+        [self.player seekToTime:CMTimeMake(self.player.currentItem.asset.duration.value * normX, self.player.currentItem.asset.duration.timescale) toleranceBefore:kCMTimeZero toleranceAfter:kCMTimeZero];
+    }
+    // otherwise we handle the default case
+    else
+    {
+        // only act on the tracking information IF it is NOT
+        // the case that tracking has been hijacked by other
+        // button behavior
+        // ---------------------------------------------------------
+        if(!self.playerPreviewButtonTrackingHijackedByButtonBehavior)
         {
-            self.playerPreviewButtonTrackingSuppressButtonBehavior = YES;
+            //NSLog(@"PlayerPreviewContinue:%0.3f", normX);
+            
+            // find out our current norm delta between where the tracking started,
+            // and where we are now
+            float currentNormDelta = normX - self.playerPreviewButtonTrackingNormXStart;
+            
+            // turn that norm delta into a delta in radians, based upon WHATEVER is our
+            // current HFOV (regardless as to whether we are in portrait or landscape)
+            float currentRadDelta = self.metalView.currentHFOVRadians * currentNormDelta;
+            
+            // using the value of what the 'customHeadingOffsetRadians' was at the start of this
+            // tracking operation, tack on the additional delta that is presently under consideration
+            self.metalView.customHeadingOffsetRadians = self.playerPreviewButtonTrackingCustomHeadingOffsetRadiansStart + currentRadDelta;
         }
-        else
-        {
-            // until we reach the above tested threshold, we do nothing else
-            // in this entire function--and thus just 'return' here...
-            if(!self.playerPreviewButtonTrackingSuppressButtonBehavior)
-                return;
-        }
-        
-        // find out our current norm delta between where the tracking started,
-        // and where we are now
-        float currentNormDelta = normX - self.playerPreviewButtonTrackingNormXStart;
-        
-        // turn that norm delta into a delta in radians, based upon WHATEVER is our
-        // current HFOV (regardless as to whether we are in portrait or landscape)
-        float currentRadDelta = self.metalView.currentHFOVRadians * currentNormDelta;
-        
-        // using the value of what the 'customHeadingOffsetRadians' was at the start of this
-        // tracking operation, tack on the additional delta that is presently under consideration
-        self.metalView.customHeadingOffsetRadians = self.playerPreviewButtonTrackingCustomHeadingOffsetRadiansStart + currentRadDelta;
     }
 }
 
