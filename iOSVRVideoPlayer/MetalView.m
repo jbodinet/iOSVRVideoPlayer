@@ -136,6 +136,34 @@ const float landscapeOrientationHFOVRadiansMax = 120 * ((float) ( PI_RAW / 180.0
     if(kCVReturnSuccess != CVMetalTextureCacheCreateTextureFromImage(kCFAllocatorDefault, _textureCache, _pixelBuffer, nil, MTLPixelFormatBGRA8Unorm, srcTextureWidth, srcTextureHeight, 0, &srcTextureRef))
     {
         NSLog(@"render: called CVMetalTextureCacheCreateTextureFromImage() failed!!!");
+        
+        // clear view to black
+        // ------------------------------------------------------
+        // Check if Core Animation provided a drawable.
+        id<CAMetalDrawable> drawable = self.currentDrawable;
+        if(drawable)
+        {
+            view.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 1.0);
+            
+            // create a command buffer
+            id<MTLCommandBuffer> commandBuffer = [self.commandQueue commandBuffer];
+            
+            // create command encoder
+            id<MTLComputeCommandEncoder> commandEncoder = [commandBuffer computeCommandEncoder];
+            
+            // set the compute pipeline
+            [commandEncoder setComputePipelineState:self.filterState];
+            
+            // end the encoding of the command.
+            [commandEncoder endEncoding];
+            
+            // Register the current drawable for rendering.
+            [commandBuffer presentDrawable:drawable];
+            
+            // Commit the command buffer for execution.
+            [commandBuffer commit];
+        }
+        
         return;
     }
     
