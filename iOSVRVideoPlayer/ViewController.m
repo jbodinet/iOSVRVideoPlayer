@@ -292,6 +292,9 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
         return;
     
     // pop open the photo library and show videos
+    // NOTE: Usage of the stock UIImagePickerController REQUIRES that the chosen
+    //       asset gets COPIED into the AppData for the App. 
+#if 0
     UIImagePickerController *picker = [[UIImagePickerController alloc] init];
     picker.delegate = self;
     picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
@@ -299,6 +302,9 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
     picker.allowsEditing = NO;
     picker.videoQuality = UIImagePickerControllerQualityTypeHigh;
     [self presentViewController:picker animated:YES completion:nil];
+#endif
+    
+    [self performSegueWithIdentifier:@"showImagePickerSansCopy" sender:self];
 }
 
 -(void) loadMovieIntoPlayer:(NSURL*)movieURL {
@@ -459,6 +465,22 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
 
 -(BOOL)prefersStatusBarHidden {
     return YES;
+}
+
+#pragma mark - Segue
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"showImagePickerSansCopy"])
+    {
+        // proper handling of sender object
+        // -----------------------------------------------------
+        if(sender != self)
+        {
+            return;
+        }
+        
+        
+        
+    }
 }
 
 @end

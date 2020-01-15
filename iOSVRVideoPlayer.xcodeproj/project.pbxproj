@@ -19,6 +19,8 @@
 		039290E02097CC41006466BE /* SphericalMath.c in Sources */ = {isa = PBXBuildFile; fileRef = 039290DB2097CC41006466BE /* SphericalMath.c */; };
 		039290E12097CC41006466BE /* MetalParamWindowFromEquirectOptimized.c in Sources */ = {isa = PBXBuildFile; fileRef = 039290DD2097CC41006466BE /* MetalParamWindowFromEquirectOptimized.c */; };
 		03CF80942098CF73003472C7 /* PlayerPreviewButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 03CF80932098CF73003472C7 /* PlayerPreviewButton.m */; };
+		03FCF38723CF72D000C822F4 /* ViewControllerImagePickerSansCopy.m in Sources */ = {isa = PBXBuildFile; fileRef = 03FCF38623CF72D000C822F4 /* ViewControllerImagePickerSansCopy.m */; };
+		03FCF38A23CF741F00C822F4 /* CollectionViewCellImagePickerSansCopy.m in Sources */ = {isa = PBXBuildFile; fileRef = 03FCF38923CF741F00C822F4 /* CollectionViewCellImagePickerSansCopy.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +45,10 @@
 		039290DD2097CC41006466BE /* MetalParamWindowFromEquirectOptimized.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = MetalParamWindowFromEquirectOptimized.c; sourceTree = "<group>"; };
 		03CF80922098CF73003472C7 /* PlayerPreviewButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlayerPreviewButton.h; sourceTree = "<group>"; };
 		03CF80932098CF73003472C7 /* PlayerPreviewButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PlayerPreviewButton.m; sourceTree = "<group>"; };
+		03FCF38523CF72D000C822F4 /* ViewControllerImagePickerSansCopy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewControllerImagePickerSansCopy.h; sourceTree = "<group>"; };
+		03FCF38623CF72D000C822F4 /* ViewControllerImagePickerSansCopy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewControllerImagePickerSansCopy.m; sourceTree = "<group>"; };
+		03FCF38823CF741F00C822F4 /* CollectionViewCellImagePickerSansCopy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CollectionViewCellImagePickerSansCopy.h; sourceTree = "<group>"; };
+		03FCF38923CF741F00C822F4 /* CollectionViewCellImagePickerSansCopy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CollectionViewCellImagePickerSansCopy.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +101,10 @@
 				039290D82097CC40006466BE /* SphericalMath.h */,
 				0324686C2093A558001C845A /* ViewController.h */,
 				0324686D2093A558001C845A /* ViewController.m */,
+				03FCF38523CF72D000C822F4 /* ViewControllerImagePickerSansCopy.h */,
+				03FCF38623CF72D000C822F4 /* ViewControllerImagePickerSansCopy.m */,
+				03FCF38823CF741F00C822F4 /* CollectionViewCellImagePickerSansCopy.h */,
+				03FCF38923CF741F00C822F4 /* CollectionViewCellImagePickerSansCopy.m */,
 			);
 			path = iOSVRVideoPlayer;
 			sourceTree = "<group>";
@@ -169,10 +179,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03FCF38723CF72D000C822F4 /* ViewControllerImagePickerSansCopy.m in Sources */,
 				0324686E2093A558001C845A /* ViewController.m in Sources */,
 				039290E02097CC41006466BE /* SphericalMath.c in Sources */,
 				032468792093A559001C845A /* main.m in Sources */,
 				039290DF2097CC41006466BE /* MetalKernelWindowFromEquirectOptimized.metal in Sources */,
+				03FCF38A23CF741F00C822F4 /* CollectionViewCellImagePickerSansCopy.m in Sources */,
 				032468812093B950001C845A /* FileUtilities.m in Sources */,
 				0324686B2093A558001C845A /* AppDelegate.m in Sources */,
 				03CF80942098CF73003472C7 /* PlayerPreviewButton.m in Sources */,
