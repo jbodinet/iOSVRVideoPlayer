@@ -27,9 +27,10 @@ static NSString * const reuseIdentifier = @"ImagePickerSansCopyCell";
     self.assetCollectionView.dataSource = self;
     
     self.pickedFileIndex = -1;
-    
-    [self prefersStatusBarHidden];
-    [self.navigationController setNeedsStatusBarAppearanceUpdate];
+}
+
+-(BOOL)prefersStatusBarHidden {
+    return YES;
 }
 
 /*
