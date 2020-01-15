@@ -23,6 +23,7 @@
 // ****************************************************************************
 
 #import "ViewController.h"
+#import "ViewControllerImagePickerSansCopy.h"
 #import "AppDelegate.h"
 #import "FileUtilities.h"
 
@@ -39,6 +40,9 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+    [self prefersStatusBarHidden];
+    [self.navigationController setNeedsStatusBarAppearanceUpdate];
     
     // set ourselves as an AppWillTerminateListener to the AppDelegate
     // -------------------------------------------------------------
@@ -480,6 +484,20 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
         
         
         
+    }
+}
+
+- (IBAction)showImagePickerSansCopyUnwind:(UIStoryboardSegue*)unwindSegue {
+    NSLog(@"showImagePickerSansCopyUnwind!!!");
+    
+    if([unwindSegue.sourceViewController isKindOfClass:[ViewControllerImagePickerSansCopy class]])
+    {
+        ViewControllerImagePickerSansCopy* imagePickerSansCopy = (ViewControllerImagePickerSansCopy*)unwindSegue.sourceViewController;
+        
+        NSInteger pickedFileIndex = imagePickerSansCopy.pickedFileIndex;
+        NSString *pickedFileAbsoluteURLString = [NSString stringWithString:imagePickerSansCopy.pickedFileAbsoluteURLString];
+        
+        NSLog(@"Picked File Idx:%d URL:%@", (int)pickedFileIndex, pickedFileAbsoluteURLString);
     }
 }
 

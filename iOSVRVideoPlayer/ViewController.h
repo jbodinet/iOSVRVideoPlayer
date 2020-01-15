@@ -57,6 +57,8 @@ typedef enum PlayerStateTypes { PlayerState_Playing = 0, PlayerState_Stopped } P
 - (void)hitPlayerPreviewButtonDoubleTap:(UITapGestureRecognizer*)gesture;
 - (void)playerPreviewButtonPinch:(UIPinchGestureRecognizer *)sender;
 
+- (IBAction)showImagePickerSansCopyUnwind:(UIStoryboardSegue*)unwindSegue;
+
 -(void) pickMovie;
 -(void) loadMovieIntoPlayer:(NSURL*)movieURL;
 -(void) playerDidFinishPlaying:(NSNotification*)notification;

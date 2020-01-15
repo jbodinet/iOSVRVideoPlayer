@@ -14,6 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong, nonatomic) IBOutlet UICollectionView *assetCollectionView;
 
+@property (nonatomic)  NSInteger pickedFileIndex;
+@property (strong, nonatomic) NSString *pickedFileAbsoluteURLString;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -25,6 +25,11 @@ static NSString * const reuseIdentifier = @"ImagePickerSansCopyCell";
     
     self.assetCollectionView.delegate = self;
     self.assetCollectionView.dataSource = self;
+    
+    self.pickedFileIndex = -1;
+    
+    [self prefersStatusBarHidden];
+    [self.navigationController setNeedsStatusBarAppearanceUpdate];
 }
 
 /*
@@ -71,37 +76,12 @@ static NSString * const reuseIdentifier = @"ImagePickerSansCopyCell";
     CollectionViewCellImagePickerSansCopy *theCell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier
                                                                                              forIndexPath:indexPath];
     theCell.imageView.image = image;
+    theCell.pickedFileIndex = [indexPath row];
     
-    // add a border on the cell -- needs #import<QuartzCore/QuartzCore.h>
-    //    theCell.layer.borderWidth = 1.0f;
-    //    theCell.layer.borderColor = [UIColor grayColor].CGColor;
-    
-    return theCell;
-    
-    /*
-    FileListQueueElement *element = [[self.fileListDelegate fileList] objectAtIndex:[indexPath row]];
-    NSURL *theURL = [element url];
-    AVCaptureDevicePosition thePosition = [element cameraPosition];
-    
-    AVURLAsset *asset = [AVURLAsset URLAssetWithURL:theURL options:nil];
-    
-    AVAssetImageGenerator* imageGenerator = [AVAssetImageGenerator assetImageGeneratorWithAsset:asset];
-    [imageGenerator setAppliesPreferredTrackTransform:YES]; // must set this to YES to get portrait images showing in portrait orientation!!!
-    
-    CMTime time = CMTimeMake((asset.duration.value * [element normIn]), asset.duration.timescale);
-    UIImage* image = [UIImage imageWithCGImage:[imageGenerator copyCGImageAtTime:time actualTime:nil error:nil]];
-    
-    CollectionViewCellPlayerAssetDrawer *theCell = [collectionView dequeueReusableCellWithReuseIdentifier:reuseIdentifier
-                                                                                             forIndexPath:indexPath];
-    theCell.imageView.image = image;
-    
-    if(thePosition == AVCaptureDevicePositionFront && self.flipSelfieCameraPlaybackHorz)
+    if([resultAsset isKindOfClass:[AVURLAsset class]])
     {
-        [theCell.imageView setTransform:CGAffineTransformMakeScale( -1.0, 1.0)];
-    }
-    else
-    {
-        [theCell.imageView setTransform:CGAffineTransformMakeScale( 1.0, 1.0)];
+        AVURLAsset *urlAsset = (AVURLAsset*)resultAsset;
+        theCell.pickedFileAbsoluteURLString = [NSString stringWithString:[urlAsset.URL absoluteString]];
     }
     
     // add a border on the cell -- needs #import<QuartzCore/QuartzCore.h>
@@ -109,7 +89,32 @@ static NSString * const reuseIdentifier = @"ImagePickerSansCopyCell";
     //    theCell.layer.borderColor = [UIColor grayColor].CGColor;
     
     return theCell;
-     */
+}
+
+#pragma mark - Navigation
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"showImagePickerSansCopyUnwind"])
+    {
+        if(sender == self)
+        {
+            
+        }
+    }
+}
+
+#pragma mark - <UICollectionViewDelegate>
+
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    // get the selected Cell
+    CollectionViewCellImagePickerSansCopy *cell = (CollectionViewCellImagePickerSansCopy *)[collectionView cellForItemAtIndexPath:indexPath];
+    
+    // grab the selection info
+    self.pickedFileIndex = cell.pickedFileIndex;
+    self.pickedFileAbsoluteURLString = cell.pickedFileAbsoluteURLString;
+    
+    // unwind back to standard view controller
+    [self performSegueWithIdentifier:@"showImagePickerSansCopyUnwind" sender:self];
 }
 
 @end
