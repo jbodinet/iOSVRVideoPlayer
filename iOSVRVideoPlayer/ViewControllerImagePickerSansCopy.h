@@ -13,9 +13,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ViewControllerImagePickerSansCopy : UIViewController <UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (strong, nonatomic) IBOutlet UICollectionView *assetCollectionView;
+@property (strong, nonatomic) IBOutlet UIButton *cancelButton;
 
 @property (nonatomic)  NSInteger pickedFileIndex;
 @property (strong, nonatomic) NSString *pickedFileAbsoluteURLString;
+
+- (IBAction)cancelButtonHit:(UIButton *)sender;
 
 @end
 

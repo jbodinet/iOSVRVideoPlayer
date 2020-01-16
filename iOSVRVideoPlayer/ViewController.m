@@ -479,34 +479,47 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
         ViewControllerImagePickerSansCopy* imagePickerSansCopy = (ViewControllerImagePickerSansCopy*)unwindSegue.sourceViewController;
         
         NSInteger pickedFileIndex = imagePickerSansCopy.pickedFileIndex;
-        NSString *pickedFileAbsoluteURLString = [NSString stringWithString:imagePickerSansCopy.pickedFileAbsoluteURLString];
-        
-        NSLog(@"Picked File Idx:%d URL:%@", (int)pickedFileIndex, pickedFileAbsoluteURLString);
-        
-        // acquire the PHFetchResults and use the pickedFile* info to test for validity and then load the file
-        PHFetchResult *results = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeVideo options:nil];
-        PHAsset *asset = [results objectAtIndex:pickedFileIndex];
-        
-        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
-        __block AVAsset *resultAsset = nil;
-        [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-            resultAsset = avAsset;
-            dispatch_semaphore_signal(semaphore);
-        }];
-        
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-        
-        // only load if the asset is of type AVURLAsset
-        if([resultAsset isKindOfClass:[AVURLAsset class]])
+        if(pickedFileIndex >= 0)
         {
-            AVURLAsset *urlAsset = (AVURLAsset*)resultAsset;
+            NSString *pickedFileAbsoluteURLString = [NSString stringWithString:imagePickerSansCopy.pickedFileAbsoluteURLString];
             
-            // ensure that the URL of the urlAsset matches that of the pickedFile, and if so, then
-            // load the pickedFile into the player
-            if(NSOrderedSame == [[urlAsset.URL absoluteString] compare:pickedFileAbsoluteURLString])
+            NSLog(@"Picked File Idx:%d URL:%@", (int)pickedFileIndex, pickedFileAbsoluteURLString);
+            
+            // acquire the PHFetchResults and use the pickedFile* info to test for validity and then load the file
+            PHFetchResult *results = [PHAsset fetchAssetsWithMediaType:PHAssetMediaTypeVideo options:nil];
+            PHAsset *asset = [results objectAtIndex:pickedFileIndex];
+            
+            dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+            PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+            __block AVAsset *resultAsset = nil;
+            [[PHImageManager defaultManager] requestAVAssetForVideo:asset options:options resultHandler:^(AVAsset * _Nullable avAsset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+                resultAsset = avAsset;
+                dispatch_semaphore_signal(semaphore);
+            }];
+            
+            dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+            
+            // only load if the asset is of type AVURLAsset
+            if([resultAsset isKindOfClass:[AVURLAsset class]])
             {
-                [self loadMovieIntoPlayer:[NSURL URLWithString:pickedFileAbsoluteURLString]];
+                AVURLAsset *urlAsset = (AVURLAsset*)resultAsset;
+                
+                // ensure that the URL of the urlAsset matches that of the pickedFile, and if so, then
+                // load the pickedFile into the player
+                if(NSOrderedSame == [[urlAsset.URL absoluteString] compare:pickedFileAbsoluteURLString])
+                {
+                    [self loadMovieIntoPlayer:[NSURL URLWithString:pickedFileAbsoluteURLString]];
+                }
+            }
+        }
+        else
+        {
+            // if the player has an item, ensure the player is playing
+            if(self.playerItem != nil)
+            {
+                self.playerState = PlayerState_Playing;
+                self.metalView.isPlaying = YES;
+                [self.player play];
             }
         }
     }

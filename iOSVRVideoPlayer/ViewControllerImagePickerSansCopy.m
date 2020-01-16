@@ -43,6 +43,15 @@ static NSString * const reuseIdentifier = @"ImagePickerSansCopyCell";
 }
 */
 
+#pragma mark - Button Handlers
+
+- (IBAction)cancelButtonHit:(UIButton *)sender {
+    self.pickedFileIndex = -1; // tell main controller that user did NOT select a video
+    
+    // unwind back to standard view controller
+    [self performSegueWithIdentifier:@"showImagePickerSansCopyUnwind" sender:self];
+}
+
 #pragma mark - <UICollectionViewDataSource>
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
@@ -92,18 +101,6 @@ static NSString * const reuseIdentifier = @"ImagePickerSansCopyCell";
     return theCell;
 }
 
-#pragma mark - Navigation
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    if ([segue.identifier isEqualToString:@"showImagePickerSansCopyUnwind"])
-    {
-        if(sender == self)
-        {
-            
-        }
-    }
-}
-
 #pragma mark - <UICollectionViewDelegate>
 
 -(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -116,6 +113,18 @@ static NSString * const reuseIdentifier = @"ImagePickerSansCopyCell";
     
     // unwind back to standard view controller
     [self performSegueWithIdentifier:@"showImagePickerSansCopyUnwind" sender:self];
+}
+
+#pragma mark - Navigation
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"showImagePickerSansCopyUnwind"])
+    {
+        if(sender == self)
+        {
+            
+        }
+    }
 }
 
 @end

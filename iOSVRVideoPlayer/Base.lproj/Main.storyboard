@@ -89,12 +89,21 @@
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="awk-1N-Zgy">
+                                <rect key="frame" x="15" y="8" width="48" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Cancel"/>
+                                <connections>
+                                    <action selector="cancelButtonHit:" destination="P5K-5Q-yku" eventType="touchUpInside" id="K3a-C7-DRI"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="WBj-3U-UJB"/>
                     </view>
                     <connections>
                         <outlet property="assetCollectionView" destination="4Tf-ci-MSh" id="rrt-jt-XaS"/>
+                        <outlet property="cancelButton" destination="awk-1N-Zgy" id="mXi-jT-wVB"/>
                         <segue destination="2XI-i7-C4I" kind="unwind" identifier="showImagePickerSansCopyUnwind" unwindAction="showImagePickerSansCopyUnwind:" id="9uJ-5k-Vz7"/>
                     </connections>
                 </viewController>
