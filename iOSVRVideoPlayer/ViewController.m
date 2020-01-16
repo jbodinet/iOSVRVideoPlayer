@@ -109,28 +109,18 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
         // we start correctly
         [self updatePreviewOrientation];
         
-        // try to load the existing movie, and if that doesn't exist, pop up the picker
-        AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
-        NSURL* preloadedMovieURL = [appDelegate firstMovieURL];
-        if(nil != preloadedMovieURL)
-        {
-            [self loadMovieIntoPlayer:preloadedMovieURL];
-        }
-        else
-        {
-            // force request to access photos library
-            [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-                if(status != PHAuthorizationStatusAuthorized)
-                {
-                    NSLog(@"*** Photo Library Access Authorization Not Granted !!! ***");
-                }
-                else
-                {
-                    // if we are granted access, show picker and allow for the loading of a movie
-                    [self pickMovie];
-                }
-            }];
-        }
+        // force request to access photos library
+        [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+            if(status != PHAuthorizationStatusAuthorized)
+            {
+                NSLog(@"*** Photo Library Access Authorization Not Granted !!! ***");
+            }
+            else
+            {
+                // if we are granted access, show picker and allow for the loading of a movie
+                [self pickMovie];
+            }
+        }];
         
         self.viewControllerHasMadeFirstAppearance = YES;
     }

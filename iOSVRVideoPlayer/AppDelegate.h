@@ -36,7 +36,6 @@
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) NSMutableSet *appWillTerminateListeners;
 
--(NSURL*) firstMovieURL;
 -(void) clearMovieFilesFromTmpDirSparingURL:(NSURL*)exceptThisURL;
 
 

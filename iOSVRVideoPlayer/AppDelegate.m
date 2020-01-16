@@ -78,35 +78,6 @@
     }
 }
 
--(NSURL*) firstMovieURL {
-    // Create a local file manager instance and grab the URL of the app temp directory
-    NSFileManager *localFileManager = [[NSFileManager alloc] init];
-    NSURL *directoryToScan = [NSURL fileURLWithPath:NSTemporaryDirectory()];
-    
-    // create an enumerator
-    NSDirectoryEnumerator *dirEnumerator =
-    [localFileManager   enumeratorAtURL:directoryToScan
-             includingPropertiesForKeys:[NSArray arrayWithObjects:NSURLIsDirectoryKey,nil]
-                                options: NSDirectoryEnumerationSkipsHiddenFiles |
-     NSDirectoryEnumerationSkipsSubdirectoryDescendants |
-     NSDirectoryEnumerationSkipsPackageDescendants
-                           errorHandler:nil];
-    
-    // walk the enumerator, return URL of first movie file
-    for (NSURL *theURL in dirEnumerator)
-    {
-        // if url is for an .mp4 file, return the URL
-        NSString *extension = [theURL pathExtension];
-        if([[extension lowercaseString] isEqualToString:@"mp4"] ||
-           [[extension lowercaseString] isEqualToString:@"mov"])
-        {
-            return theURL;
-        }
-    }
-    
-    return nil;
-}
-
 #pragma mark - Termination Cleanup
 -(void) clearMovieFilesFromTmpDirSparingURL:(NSURL*)exceptThisURL {
     // Create a local file manager instance and grab the URL of the app temp directory
