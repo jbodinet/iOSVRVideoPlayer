@@ -253,12 +253,12 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
        [(NSString*)info[UIImagePickerControllerMediaType] isEqualToString:(NSString*)kUTTypeMovie])
     {
         NSURL *mediaURL = info[UIImagePickerControllerMediaURL];
-        
+#if 0 // We are no longer copying the movies into AppData, so we do not have to delete them from AppData either
         // ditch all other videos except the one just picked
         // as iOS always copies picked video into app data
         AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
         [appDelegate clearMovieFilesFromTmpDirSparingURL:mediaURL];
-        
+#endif
         [self loadMovieIntoPlayer:mediaURL];
     }
     
