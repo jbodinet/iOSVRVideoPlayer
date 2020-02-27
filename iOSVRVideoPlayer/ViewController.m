@@ -279,23 +279,12 @@ const float playerPreviewButtonSuppressionNormXThreshold = 0.05;
 
 #pragma mark - Player Utils
 -(void) pickMovie {
-    if([PHPhotoLibrary authorizationStatus] != PHAuthorizationStatusAuthorized)
-        return;
-    
-    // pop open the photo library and show videos
-    // NOTE: Usage of the stock UIImagePickerController REQUIRES that the chosen
-    //       asset gets COPIED into the AppData for the App. 
-#if 0
-    UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-    picker.delegate = self;
-    picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    picker.mediaTypes = [[NSArray alloc] initWithObjects: (NSString *) kUTTypeMovie, nil];
-    picker.allowsEditing = NO;
-    picker.videoQuality = UIImagePickerControllerQualityTypeHigh;
-    [self presentViewController:picker animated:YES completion:nil];
-#endif
-    
-    [self performSegueWithIdentifier:@"showImagePickerSansCopy" sender:self];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if([PHPhotoLibrary authorizationStatus] != PHAuthorizationStatusAuthorized)
+            return;
+        
+        [self performSegueWithIdentifier:@"showImagePickerSansCopy" sender:self];
+    });
 }
 
 -(void) loadMovieIntoPlayer:(NSURL*)movieURL {
